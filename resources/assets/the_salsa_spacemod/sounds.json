@@ -1,0 +1,9 @@
+{
+   "hit": {"category": "master","sounds": [hit1, hit2, hit3]},
+   "swing": {"category": "master","sounds": [swing1, swing2, swing3]},
+   "saberon": {"category": "master","sounds": [{"name": "saberon","stream": false}]},
+   "saberoff": {"category": "master","sounds": [{"name": "saberoff","stream": false}]},
+   "blaster.pistol": {"category": "master","sounds": [{"name": "blaster.pistol","stream": false}]},
+   "blaster.rifle": {"category": "master","sounds": [{"name": "blaster.rifle","stream": false}]},
+   "reload": {"category": "master","sounds": [{"name": "reload","stream": false}]}
+}
