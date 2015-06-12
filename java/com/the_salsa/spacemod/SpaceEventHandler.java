@@ -9,6 +9,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -29,10 +30,10 @@ public class SpaceEventHandler implements IWorldGenerator
 	 * Used to play Plasma Saber sounds when the player uses one.
 	 */
 	@SubscribeEvent
-	public void playSaber(PlayerEvent event)
+	public void onPlaySwingSaber(PlayerEvent event)
 	{
 		if (!saberEquipped && event.entityPlayer.getHeldItem() != null && 
-				event.entityPlayer.getHeldItem().getUnlocalizedName().equals(SpaceMod.plasmaSaber.getUnlocalizedName()))
+				event.entityPlayer.getHeldItem().getItem() instanceof ItemPlasmaSaber)
 		{
 			saberEquipped = true;
 			event.entityPlayer.worldObj.playSoundAtEntity(event.entityPlayer, SpaceMod.MODID + ":" + "saberon", 1F, 1F);
@@ -43,7 +44,7 @@ public class SpaceEventHandler implements IWorldGenerator
 			event.entityPlayer.worldObj.playSoundAtEntity(event.entityPlayer, SpaceMod.MODID + ":" + "saberoff", 1F, 1F);
 		}
 		else if (saberEquipped && event.entityPlayer.getHeldItem() != null && 
-				!event.entityPlayer.getHeldItem().getUnlocalizedName().equals(SpaceMod.plasmaSaber.getUnlocalizedName()))
+				!(event.entityPlayer.getHeldItem().getItem() instanceof ItemPlasmaSaber))
 		{
 			saberEquipped = false;
 			event.entityPlayer.worldObj.playSoundAtEntity(event.entityPlayer, SpaceMod.MODID + ":" + "saberoff", 1F, 1F);
@@ -56,7 +57,7 @@ public class SpaceEventHandler implements IWorldGenerator
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event)
 	{
-		if (event.player.dimension == 2 && !event.player.capabilities.isCreativeMode && event.player.isAirBorne)
+		if (event.player.dimension == 0 && !event.player.capabilities.isCreativeMode && event.player.isAirBorne)
 		{
 			hasJumped = true;
 			
@@ -109,15 +110,29 @@ public class SpaceEventHandler implements IWorldGenerator
 	 * Used to make the player hold a rifle like a drawn bow at all times
 	 */
 	@SubscribeEvent
-	public void playerRenderEvent(RenderPlayerEvent.Pre event)
+	public void onPlayerRenderEvent(RenderPlayerEvent.Pre event)
 	{
 		EntityPlayer player = (EntityPlayer) event.entity;
+		
 		if(player.getHeldItem() != null)
 		{
 			if(player.getHeldItem().getItem() instanceof ItemBlasterRifle)
 			{
 				event.renderer.modelArmorChestplate.aimedBow = event.renderer.modelArmor.aimedBow = event.renderer.modelBipedMain.aimedBow = true;
 			}
+		}
+	}
+	
+	
+	/**
+	 * Used to make the BlasterPistol semiautomatic because the onPlayerStoppedUsing method is not called consistently enough
+	 */
+	@SubscribeEvent
+	public void onPlayerStoppedUsingPistol(PlayerUseItemEvent.Stop event)
+	{
+		if (event.entityPlayer.getHeldItem().getItem() != null && event.entityPlayer.getHeldItem().getItem() instanceof ItemBlasterPistol)
+		{
+			event.entityPlayer.getHeldItem().getItem().onPlayerStoppedUsing(event.entityPlayer.getHeldItem(), event.entityPlayer.worldObj, event.entityPlayer, 0);
 		}
 	}
 }

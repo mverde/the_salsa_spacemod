@@ -1,5 +1,6 @@
 package com.the_salsa.spacemod;
 
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import cpw.mods.fml.relauncher.Side;
@@ -24,9 +25,11 @@ public class ItemBlasterRifle extends ItemBow
 {
 	private static double boltSpeed = 2D;
 	private static double range = 60.0D;
-	private static float damage = 4.5F;
-	private static int fireTicksMax = 3;
+	private static double spreadModifier = 0.04;
+	private static float damage = 6F;
+	private static int fireTicksMax = 4;
 	private static int reloadTicksMax = 80;
+	private static Random rand = new Random();
 	
 	/**
 	 * max damage - 2 = ammo capacity
@@ -125,6 +128,37 @@ public class ItemBlasterRifle extends ItemBow
 
         if (!world.isRemote)
         {
+            double xRand = spreadModifier * rand.nextInt(3);
+            double yRand = spreadModifier * rand.nextInt(3);
+            double zRand = spreadModifier * rand.nextInt(3);
+            
+            if (rand.nextInt(2) == 0)
+            {
+            	bolt.motionX += 0.0001 * xRand;
+            }
+            else
+            {
+            	bolt.motionX -= 0.0001 * xRand;
+            }
+            
+            if (rand.nextInt(2) == 0)
+            {
+            	bolt.motionY += yRand;
+            }
+            else
+            {
+            	bolt.motionY -= yRand;
+            }
+            
+            if (rand.nextInt(2) == 0)
+            {
+            	bolt.motionZ += zRand;
+            }
+            else
+            {
+            	bolt.motionZ -= zRand;
+            }
+            
             world.spawnEntityInWorld(bolt);
         }
 	}

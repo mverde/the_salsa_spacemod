@@ -24,15 +24,20 @@ public class SpaceMod
     public static final String VERSION = "1.0";
     
     //Materials
-    public static ToolMaterial plasma = EnumHelper.addToolMaterial("plasma", 3, 1000, 10.0F, 5.0F, 6);
+    public static ToolMaterial plasma = EnumHelper.addToolMaterial("plasma", 3, 1000, 10.0F, 6.0F, 6);
     
     //Items
-    public static Item plasmaSaber;
     public static Item blasterPistol;
     public static Item gasCanister;
     public static Item emptyCanister;
     public static Item blasterRifle;
     public static Item spaceTeleporter;
+    public static Item plasmaSaberBlue;
+    public static Item plasmaSaberGreen;
+    public static Item plasmaSaberRed;
+    public static Item plasmaSaberPurple;
+    public static Item plasmaSaberYellow;
+    public static Item plasmaSaberRainbow;
     
     //biomes
     public static BiomeGenBase spacebiome = new BiomeSpace(25).setBiomeName("Space");
@@ -52,20 +57,30 @@ public class SpaceMod
     	proxy.registerRendering();
     	
     	//Initialize new Items
-    	plasmaSaber = new ItemPlasmaSaber(plasma, "plasmaSaber");
     	blasterPistol = new ItemBlasterPistol("blasterPistol");
     	gasCanister = new ItemSpaceGeneric("gasCanister", 1);
     	emptyCanister = new ItemSpaceGeneric("emptyCanister", 16);
     	blasterRifle = new ItemBlasterRifle("blasterRifle");
     	spaceTeleporter = new ItemSpaceTeleporter("spaceTeleporter");
+    	plasmaSaberBlue = new ItemPlasmaSaberBlue(plasma, "plasmaSaberBlue");
+    	plasmaSaberGreen = new ItemPlasmaSaberGreen(plasma, "plasmaSaberGreen");
+    	plasmaSaberRed = new ItemPlasmaSaberRed(plasma, "plasmaSaberRed");
+    	plasmaSaberPurple = new ItemPlasmaSaberPurple(plasma, "plasmaSaberPurple");
+    	plasmaSaberYellow = new ItemPlasmaSaberYellow(plasma, "plasmaSaberYellow");
+    	plasmaSaberRainbow = new ItemPlasmaSaberRainbow(plasma, "plasmaSaberRainbow");
     	
     	//Register new Items
-    	GameRegistry.registerItem(plasmaSaber, "PlasmaSaber");
     	GameRegistry.registerItem(blasterPistol, "BlasterPistol");
     	GameRegistry.registerItem(gasCanister, "GasCanister");
     	GameRegistry.registerItem(emptyCanister, "EmptyCanister");
     	GameRegistry.registerItem(blasterRifle, "BlasterRifle");
     	GameRegistry.registerItem(spaceTeleporter, "SpaceTeleporter");
+    	GameRegistry.registerItem(plasmaSaberBlue, "PlasmaSaberBlue");
+    	GameRegistry.registerItem(plasmaSaberGreen, "PlasmaSaberGreen");
+    	GameRegistry.registerItem(plasmaSaberRed, "PlasmaSaberRed");
+    	GameRegistry.registerItem(plasmaSaberPurple, "PlasmaSaberPurple");
+    	GameRegistry.registerItem(plasmaSaberYellow, "PlasmaSaberYellow");
+    	GameRegistry.registerItem(plasmaSaberRainbow, "PlasmaSaberRainbow");
     	
     	//Register new Entities
     	EntityRegistry.registerModEntity(EntityBlasterBolt.class, "blasterbolt", 0, this, 80, 3, true);

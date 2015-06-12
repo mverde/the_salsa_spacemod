@@ -1,5 +1,10 @@
-item.the_salsa_spacemod_plasmaSaber.name=Plasma Saber
 item.the_salsa_spacemod_blasterPistol.name=Blaster Pistol
 item.the_salsa_spacemod_gasCanister.name=Gas Canister
 item.the_salsa_spacemod_emptyCanister.name=Empty Canister
 item.the_salsa_spacemod_blasterRifle.name=Blaster Rifle
+item.the_salsa_spacemod_plasmaSaberBlue.name=Blue Plasma Saber
+item.the_salsa_spacemod_plasmaSaberGreen.name=Green Plasma Saber
+item.the_salsa_spacemod_plasmaSaberRed.name=Red Plasma Saber
+item.the_salsa_spacemod_plasmaSaberPurple.name=Purple Plasma Saber
+item.the_salsa_spacemod_plasmaSaberYellow.name=Yellow Plasma Saber
+item.the_salsa_spacemod_plasmaSaberRainbow.name=Rainbow Plasma Saber

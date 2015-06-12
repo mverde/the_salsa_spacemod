@@ -1,6 +1,7 @@
 package com.the_salsa.spacemod;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
@@ -28,6 +29,38 @@ public class RenderPlasmaSaber implements IItemRenderer
 	{
 		return true;
 	}
+	
+	public void chooseTexture(Item item)
+	{
+		if (item == null)
+		{
+			Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(SpaceMod.MODID, "models/plasmasaberoff.png"));
+		}
+		else if (item instanceof ItemPlasmaSaberBlue)
+		{
+			Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(SpaceMod.MODID, "models/plasmasaberblue.png"));
+		}
+		else if (item instanceof ItemPlasmaSaberGreen)
+		{
+			Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(SpaceMod.MODID, "models/plasmasabergreen.png"));
+		}
+		else if (item instanceof ItemPlasmaSaberRed)
+		{
+			Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(SpaceMod.MODID, "models/plasmasaberred.png"));
+		}
+		else if (item instanceof ItemPlasmaSaberPurple)
+		{
+			Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(SpaceMod.MODID, "models/plasmasaberpurple.png"));
+		}
+		else if (item instanceof ItemPlasmaSaberYellow)
+		{
+			Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(SpaceMod.MODID, "models/plasmasaberyellow.png"));
+		}
+		else if (item instanceof ItemPlasmaSaberRainbow)
+		{
+			Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(SpaceMod.MODID, "models/plasmasaberrainbow.png"));
+		}
+	}
 
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
@@ -41,24 +74,24 @@ public class RenderPlasmaSaber implements IItemRenderer
 			GL11.glScalef(0.8F, 0.8F, 0.8F);
 			GL11.glTranslatef(0.25F, 0.55F, 0F);
 			GL11.glRotatef(-230F, 1F, 0F, 0F);
-			Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(SpaceMod.MODID, "models/plasmasaberoff.png"));
+			chooseTexture(null);
 			break;
 		case EQUIPPED:
 			GL11.glTranslatef(0.1F, 0.75F, 0.25F);
 			GL11.glRotatef(145F, 1F, 0F, 0F);
 			GL11.glRotatef(-35F, 0F, 0F, 1F);
-			Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(SpaceMod.MODID, "models/plasmasaber.png"));
+			chooseTexture(item.getItem());
 			break;
 		case EQUIPPED_FIRST_PERSON:
 			GL11.glTranslatef(0F, 0.6F, 0.3F);
 			GL11.glRotatef(180F, 1F, 0F, 0.1F);
-			Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(SpaceMod.MODID, "models/plasmasaber.png"));
+			chooseTexture(item.getItem());
 			break;
 		default:
 			GL11.glScalef(0.66F, 0.66F, 0.66F);
 			GL11.glTranslatef(0F, 0.5F, 0F);
 			GL11.glRotatef(180F, 1F, 0F, 0F);
-			Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(SpaceMod.MODID, "models/plasmasaberoff.png"));
+			chooseTexture(null);
 			break;
 		}
 		

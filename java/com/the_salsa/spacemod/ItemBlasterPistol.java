@@ -19,14 +19,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.ArrowLooseEvent;
+import net.minecraftforge.event.entity.player.ArrowNockEvent;
+import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 
 public class ItemBlasterPistol extends ItemBow
 {
 	private static double boltSpeed = 1.2D;
 	private static double range = 40.0D;
-	private static float damage = 7.0F;
+	private static float damage = 7.5F;
 	private static int reloadTicksMax = 60;
-	private static int fireTicksMax = 7;
+	private static int fireTicksMax = 10;
 	
 	/**
 	 * max damage - 2 = ammo capacity
@@ -70,6 +73,8 @@ public class ItemBlasterPistol extends ItemBow
 	@Override
     public ItemStack onItemRightClick(ItemStack p_77659_1_, World p_77659_2_, EntityPlayer p_77659_3_)
     {	
+		this.onItemUse(p_77659_1_, p_77659_3_, p_77659_2_, 0, 0, 0, 0, 0F, 0F, 0F);
+		
 		if (p_77659_1_.stackTagCompound == null || p_77659_1_.stackTagCompound.getBoolean("reloadTimerOn") || 
 				p_77659_1_.stackTagCompound.getInteger("fireTicks") != fireTicksMax || p_77659_1_.stackTagCompound.getBoolean("fired"))
 		{

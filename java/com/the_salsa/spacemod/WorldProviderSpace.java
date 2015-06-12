@@ -1,14 +1,17 @@
 package com.the_salsa.spacemod;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
-import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.WorldChunkManagerHell;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.client.IRenderHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class WorldProviderSpace extends WorldProvider
 {	
@@ -42,7 +45,7 @@ public class WorldProviderSpace extends WorldProvider
 	@Override
 	public boolean canRespawnHere()
 	{
-		return true;
+		return false;
 	}
 	
 	@Override
@@ -83,14 +86,56 @@ public class WorldProviderSpace extends WorldProvider
         return 0.5F;
     }
 	
-	@SideOnly(Side.CLIENT)
-	public boolean renderClouds()
+	@Override
+	public boolean getWorldHasVoidParticles()
 	{
 		return false;
 	}
 	
+	@Override
+	public int getRespawnDimension(EntityPlayerMP player)
+	{
+		return 0;
+	}
+	
+	@Override
+	public double getHorizon()
+	{
+		return -1024D;
+	}
+	
+	@Override
+	public IRenderHandler getSkyRenderer() {
+		return new SpaceSkyRenderer();
+	}
+
+	@Override
+	public IRenderHandler getCloudRenderer() {
+		return new SpaceCloudRenderer();
+	}
+	
+    @Override
+    public Vec3 getSkyColor(Entity cameraEntity, float partialTicks)
+    {
+        return Vec3.createVectorHelper(0D, 0D, 0D);
+    }
+	
 	@SideOnly(Side.CLIENT)
-	public boolean renderVoidFog()
+	@Override
+	public boolean isSkyColored()
+	{
+		return false;
+	}
+	
+    @SideOnly(Side.CLIENT)
+    @Override
+    public Vec3 getFogColor(float par1, float par2)
+    {
+        return Vec3.createVectorHelper(0D, 0D, 0D);
+    }
+	
+	@SideOnly(Side.CLIENT)
+	public boolean renderClouds()
 	{
 		return false;
 	}
@@ -102,7 +147,16 @@ public class WorldProviderSpace extends WorldProvider
 	}
 	
 	@SideOnly(Side.CLIENT)
-	public float getStarBrightness(World world, float f) {
+	@Override
+	public double getVoidFogYFactor()
+	{
+		return 1.0D;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@Override
+	public float getStarBrightness(float f)
+	{
 		return 1.5F;
 	}
 	
