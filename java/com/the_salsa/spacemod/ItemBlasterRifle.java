@@ -1,25 +1,19 @@
 package com.the_salsa.spacemod;
 
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemBlasterRifle extends ItemBow
 {
@@ -123,11 +117,11 @@ public class ItemBlasterRifle extends ItemBow
 	public void fire(World world, EntityPlayer player)
 	{
 		EntityBlasterBolt bolt = new EntityBlasterBolt(world, player, boltSpeed, range, damage);
-		
-        world.playSoundAtEntity(player, SpaceMod.MODID + ":" + "blaster.rifle", 1.0F, 1.0F);
 
         if (!world.isRemote)
         {
+            world.playSoundAtEntity(player, SpaceMod.MODID + ":" + "blaster.rifle", 1.0F, 1.0F);
+            
             double xRand = spreadModifier * rand.nextInt(3);
             double yRand = spreadModifier * rand.nextInt(3);
             double zRand = spreadModifier * rand.nextInt(3);

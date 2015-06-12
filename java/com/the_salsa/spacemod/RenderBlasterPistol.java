@@ -49,7 +49,7 @@ public class RenderBlasterPistol implements IItemRenderer
 			break;
 		case EQUIPPED_FIRST_PERSON:
 			GL11.glScalef(0.9F, 0.9F, 0.9F);
-			GL11.glTranslatef(0.2F, 0.85F, -0.245F);
+			GL11.glTranslatef(0.2F, 0.84F, -0.245F);
 			GL11.glRotatef(90F, 1F, 0.5F, -4F);
 			GL11.glRotatef(90F, 0.75F, 0.25F, -2.95F);
 			break;

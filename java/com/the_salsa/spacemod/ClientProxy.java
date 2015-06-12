@@ -1,8 +1,5 @@
 package com.the_salsa.spacemod;
 
-import com.the_salsa.spacemod.EntityBlasterBolt;
-import com.the_salsa.spacemod.RenderBlasterBolt;
-
 import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 

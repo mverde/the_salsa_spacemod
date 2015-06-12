@@ -1,27 +1,17 @@
 package com.the_salsa.spacemod;
 
-import java.util.concurrent.TimeUnit;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.ArrowLooseEvent;
-import net.minecraftforge.event.entity.player.ArrowNockEvent;
-import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemBlasterPistol extends ItemBow
 {
@@ -54,7 +44,6 @@ public class ItemBlasterPistol extends ItemBow
 	    itemStack.stackTagCompound.setInteger("fireTicks", fireTicksMax);
 	    itemStack.stackTagCompound.setBoolean("reloadTimerOn", false);
 	    itemStack.stackTagCompound.setBoolean("fireTimerOn", false);
-	    itemStack.stackTagCompound.setBoolean("fired", false);
 	}
 	
     /**
@@ -62,8 +51,7 @@ public class ItemBlasterPistol extends ItemBow
      */
 	@Override
 	public void onPlayerStoppedUsing(ItemStack p_77615_1_, World p_77615_2_, EntityPlayer p_77615_3_, int p_77615_4_)
-	{
-		p_77615_1_.stackTagCompound.setBoolean("fired", false);
+	{	
 		return;
 	}
 	
@@ -73,20 +61,22 @@ public class ItemBlasterPistol extends ItemBow
 	@Override
     public ItemStack onItemRightClick(ItemStack p_77659_1_, World p_77659_2_, EntityPlayer p_77659_3_)
     {	
-		this.onItemUse(p_77659_1_, p_77659_3_, p_77659_2_, 0, 0, 0, 0, 0F, 0F, 0F);
-		
 		if (p_77659_1_.stackTagCompound == null || p_77659_1_.stackTagCompound.getBoolean("reloadTimerOn") || 
-				p_77659_1_.stackTagCompound.getInteger("fireTicks") != fireTicksMax || p_77659_1_.stackTagCompound.getBoolean("fired"))
+				p_77659_1_.stackTagCompound.getInteger("fireTicks") != fireTicksMax)
 		{
 			return p_77659_1_;
 		}
-		
-        if (p_77659_3_.capabilities.isCreativeMode)
-        {	
+
+		if (p_77659_3_.capabilities.isCreativeMode)
+        {
+        	p_77659_3_.setItemInUse(p_77659_1_, this.getMaxItemUseDuration(p_77659_1_));
+        	
         	fire(p_77659_2_, p_77659_3_);
         }
         else if (p_77659_1_.getItemDamage() < this.getMaxDamage())
         {
+        	p_77659_3_.setItemInUse(p_77659_1_, this.getMaxItemUseDuration(p_77659_1_));
+        	
             p_77659_1_.damageItem(1, p_77659_3_);
             
             if (p_77659_1_.getItemDamage() == this.getMaxDamage() - 1)
@@ -94,7 +84,7 @@ public class ItemBlasterPistol extends ItemBow
             	if (!p_77659_2_.isRemote && p_77659_3_.inventory.hasItem(SpaceMod.gasCanister))
             	{
             		p_77659_1_.stackTagCompound.setBoolean("reloadTimerOn", true);
-
+            		
             		p_77659_2_.playSoundAtEntity(p_77659_3_, SpaceMod.MODID + ":" + "reload", 1.0F, 1.0F);
                     p_77659_1_.damageItem(-(this.getMaxDamage() - 1), p_77659_3_);
                 	p_77659_3_.inventory.consumeInventoryItem(SpaceMod.gasCanister);
@@ -107,15 +97,13 @@ public class ItemBlasterPistol extends ItemBow
             }
             else if (p_77659_1_.getItemDamage() < this.getMaxDamage() - 1)
             {
+            	p_77659_3_.setItemInUse(p_77659_1_, this.getMaxItemUseDuration(p_77659_1_));
+            	
             	fire(p_77659_2_, p_77659_3_);
             }
         }
-        
+		
         p_77659_1_.stackTagCompound.setBoolean("fireTimerOn", true);
-        
-        //if (!p_77659_1_.stackTagCompound.getBoolean("fired"))
-        	//p_77659_1_.stackTagCompound.setBoolean("fired", true);
-        
         return p_77659_1_;
     }
 	
@@ -125,11 +113,10 @@ public class ItemBlasterPistol extends ItemBow
 	public void fire(World world, EntityPlayer player)
 	{
 		EntityBlasterBolt bolt = new EntityBlasterBolt(world, player, boltSpeed, range, damage);
-		
-        world.playSoundAtEntity(player, SpaceMod.MODID + ":" + "blaster.pistol", 1.0F, 1.0F);
 
         if (!world.isRemote)
         {
+            world.playSoundAtEntity(player, SpaceMod.MODID + ":" + "blaster.rifle", 1.0F, 1.0F);
             world.spawnEntityInWorld(bolt);
         }
 	}
@@ -150,7 +137,6 @@ public class ItemBlasterPistol extends ItemBow
 			p_77663_1_.stackTagCompound.setInteger("fireTicks", fireTicksMax);
 		    p_77663_1_.stackTagCompound.setBoolean("reloadTimerOn", false);
 		    p_77663_1_.stackTagCompound.setBoolean("fireTimerOn", false);
-		    p_77663_1_.stackTagCompound.setBoolean("fired", false);
 		}
 		else
 		{
@@ -220,5 +206,14 @@ public class ItemBlasterPistol extends ItemBow
     public IIcon getItemIconForUseDuration(int p_94599_1_)
     {
         return null;
+    }
+    
+    /**
+     * How long it takes to use or consume an item
+     */
+    @Override
+    public int getMaxItemUseDuration(ItemStack p_77626_1_)
+    {
+        return 1;
     }
 }

@@ -3,20 +3,15 @@ package com.the_salsa.spacemod;
 import java.util.Random;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 
 public class SpaceEventHandler implements IWorldGenerator
 {	
-	boolean saberEquipped = false;
 	boolean hasJumped = false;
 	
 	@Override
@@ -24,31 +19,6 @@ public class SpaceEventHandler implements IWorldGenerator
 			IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
 	{
 		return;
-	}
-	
-	/**
-	 * Used to play Plasma Saber sounds when the player uses one.
-	 */
-	@SubscribeEvent
-	public void onPlaySwingSaber(PlayerEvent event)
-	{
-		if (!saberEquipped && event.entityPlayer.getHeldItem() != null && 
-				event.entityPlayer.getHeldItem().getItem() instanceof ItemPlasmaSaber)
-		{
-			saberEquipped = true;
-			event.entityPlayer.worldObj.playSoundAtEntity(event.entityPlayer, SpaceMod.MODID + ":" + "saberon", 1F, 1F);
-		}
-		else if (saberEquipped && event.entityPlayer.getHeldItem() == null)
-		{
-			saberEquipped = false;
-			event.entityPlayer.worldObj.playSoundAtEntity(event.entityPlayer, SpaceMod.MODID + ":" + "saberoff", 1F, 1F);
-		}
-		else if (saberEquipped && event.entityPlayer.getHeldItem() != null && 
-				!(event.entityPlayer.getHeldItem().getItem() instanceof ItemPlasmaSaber))
-		{
-			saberEquipped = false;
-			event.entityPlayer.worldObj.playSoundAtEntity(event.entityPlayer, SpaceMod.MODID + ":" + "saberoff", 1F, 1F);
-		}
 	}
 	
 	/**
@@ -120,19 +90,6 @@ public class SpaceEventHandler implements IWorldGenerator
 			{
 				event.renderer.modelArmorChestplate.aimedBow = event.renderer.modelArmor.aimedBow = event.renderer.modelBipedMain.aimedBow = true;
 			}
-		}
-	}
-	
-	
-	/**
-	 * Used to make the BlasterPistol semiautomatic because the onPlayerStoppedUsing method is not called consistently enough
-	 */
-	@SubscribeEvent
-	public void onPlayerStoppedUsingPistol(PlayerUseItemEvent.Stop event)
-	{
-		if (event.entityPlayer.getHeldItem().getItem() != null && event.entityPlayer.getHeldItem().getItem() instanceof ItemBlasterPistol)
-		{
-			event.entityPlayer.getHeldItem().getItem().onPlayerStoppedUsing(event.entityPlayer.getHeldItem(), event.entityPlayer.worldObj, event.entityPlayer, 0);
 		}
 	}
 }

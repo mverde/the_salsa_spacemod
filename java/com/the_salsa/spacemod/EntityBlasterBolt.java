@@ -1,28 +1,11 @@
 package com.the_salsa.spacemod;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import java.util.List;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityThrowable;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.server.S2BPacketChangeGameState;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 public class EntityBlasterBolt extends EntityThrowable
@@ -31,6 +14,7 @@ public class EntityBlasterBolt extends EntityThrowable
     private static float damage;
     private static double originX, originY, originZ;
     private static double range;
+    private static double speed;
 
     public EntityBlasterBolt(World p_i1773_1_)
     {
@@ -51,6 +35,7 @@ public class EntityBlasterBolt extends EntityThrowable
         this.originY = this.posY;
         this.originZ = this.posZ;
         this.range = range;
+        this.speed = speed;
     }
 
     public EntityBlasterBolt(World p_i1775_1_, double p_i1775_2_, double p_i1775_4_, double p_i1775_6_)
@@ -64,7 +49,27 @@ public class EntityBlasterBolt extends EntityThrowable
     protected void onImpact(MovingObjectPosition p_70184_1_)
     {	
         if (p_70184_1_.entityHit != null)
-        {
+        {  	
+            if (p_70184_1_.entityHit instanceof EntityPlayer)
+            {
+            	EntityPlayer player = (EntityPlayer) p_70184_1_.entityHit;
+            	
+            	if (player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemPlasmaSaber
+            			&& player.isBlocking())
+            	{
+            		EntityBlasterBolt bolt = new EntityBlasterBolt(player.worldObj, player, this.speed, this.range, this.damage);
+
+                    if (!player.worldObj.isRemote)
+                    {
+                    	this.setDead();
+                    	player.worldObj.playSoundAtEntity(player, SpaceMod.MODID + ":" + "deflect", 1.0F, 1.0F);
+                        player.worldObj.spawnEntityInWorld(bolt);
+                    }
+                    
+                    return;
+            	}
+            }
+            
             p_70184_1_.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), damage);
         }
 
