@@ -90,8 +90,7 @@ public class EntityBlasterBolt extends EntityThrowable
      */
     public void onUpdate()
     {
-    	if (MathHelper.sqrt_double((this.posX - this.originX) * (this.posX - this.originX) + (this.posY - this.originY) 
-    			* (this.posY - this.originY) + (this.posZ - this.originZ) * (this.posZ - this.originZ)) > this.range)
+    	if (this.getDistance(originX, originY, originZ) > this.range)
     	{
             for (int i = 0; i < 8; ++i)
             {

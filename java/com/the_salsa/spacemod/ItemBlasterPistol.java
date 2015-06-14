@@ -66,7 +66,7 @@ public class ItemBlasterPistol extends ItemBow
 		{
 			return p_77659_1_;
 		}
-
+		
 		if (p_77659_3_.capabilities.isCreativeMode)
         {
         	p_77659_3_.setItemInUse(p_77659_1_, this.getMaxItemUseDuration(p_77659_1_));
@@ -116,7 +116,7 @@ public class ItemBlasterPistol extends ItemBow
 
         if (!world.isRemote)
         {
-            world.playSoundAtEntity(player, SpaceMod.MODID + ":" + "blaster.rifle", 1.0F, 1.0F);
+            world.playSoundAtEntity(player, SpaceMod.MODID + ":" + "blaster.pistol", 1.0F, 1.0F);
             world.spawnEntityInWorld(bolt);
         }
 	}
@@ -214,6 +214,6 @@ public class ItemBlasterPistol extends ItemBow
     @Override
     public int getMaxItemUseDuration(ItemStack p_77626_1_)
     {
-        return 1;
+        return 72000;
     }
 }

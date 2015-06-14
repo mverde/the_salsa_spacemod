@@ -19,6 +19,7 @@ public class BiomeSpace extends BiomeGenEnd
 		
 		this.theBiomeDecorator.cactiPerChunk = 0;
 		this.theBiomeDecorator.deadBushPerChunk = 0;
+		this.setDisableRain();
 	}
 	
 	@Override

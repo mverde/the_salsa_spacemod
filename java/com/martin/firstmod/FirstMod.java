@@ -1,5 +1,7 @@
 package com.martin.firstmod;
 
+import com.the_salsa.spacemod.BiomeSpace;
+
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
@@ -126,7 +128,7 @@ public class FirstMod
     	
     	for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
     	{
-    		if (BiomeGenBase.getBiomeGenArray()[i] != null)
+    		if (BiomeGenBase.getBiomeGenArray()[i] != null && !(BiomeGenBase.getBiomeGenArray()[i] instanceof BiomeSpace))
     		{
     			EntityRegistry.addSpawn(EntityMartMob.class, 10, 1, 3, EnumCreatureType.monster, BiomeGenBase.getBiomeGenArray()[i]);
     		}

@@ -1,5 +1,6 @@
 package com.the_salsa.spacemod;
 
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -38,6 +39,9 @@ public class SpaceMod
     public static Item plasmaSaberYellow;
     public static Item plasmaSaberRainbow;
     
+    //Blocks
+    public static Block spaceRock;
+    
     //biomes
     public static BiomeGenBase spacebiome = new BiomeSpace(25).setBiomeName("Space");
     
@@ -68,6 +72,9 @@ public class SpaceMod
     	plasmaSaberYellow = new ItemPlasmaSaberYellow(plasma, "plasmaSaberYellow");
     	plasmaSaberRainbow = new ItemPlasmaSaberRainbow(plasma, "plasmaSaberRainbow");
     	
+    	//Initialize new Blocks
+    	spaceRock = new BlockSpaceRock();
+    	
     	//Register new Items
     	GameRegistry.registerItem(blasterPistol, "BlasterPistol");
     	GameRegistry.registerItem(gasCanister, "GasCanister");
@@ -81,12 +88,17 @@ public class SpaceMod
     	GameRegistry.registerItem(plasmaSaberYellow, "PlasmaSaberYellow");
     	GameRegistry.registerItem(plasmaSaberRainbow, "PlasmaSaberRainbow");
     	
+    	//Register new Blocks
+    	GameRegistry.registerBlock(spaceRock, "SpaceRock");
+    	
     	//Register new Entities
     	EntityRegistry.registerModEntity(EntityBlasterBolt.class, "blasterbolt", 0, this, 80, 3, true);
     	
     	//Register new Biomes
     	BiomeDictionary.registerBiomeType(spacebiome, BiomeDictionary.Type.DRY);
-    	//BiomeManager.addSpawn
+
+    	//Register new WorldGenerators
+    	GameRegistry.registerWorldGenerator(handler, 0);
 
     	//Register new Dimensions
     	DimensionManager.registerProviderType(dimensionSpace, WorldProviderSpace.class, false);

@@ -1,7 +1,5 @@
 package com.the_salsa.spacemod;
 
-import static net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.CAVE;
-import static net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.RAVINE;
 import static net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.SCATTERED_FEATURE;
 
 import java.util.List;
@@ -59,12 +57,8 @@ public class ChunkProviderSpace implements IChunkProvider {
 	private final double[] noiseArray;
 	private final float[] parabolicField;
 	private double[] stoneNoise = new double[256];
-	private MapGenBase caveGenerator = new MapGenCaves();
 
 	private MapGenScatteredFeature scatteredFeatureGenerator = new MapGenScatteredFeature();
-
-	/** Holds ravine generator */
-	private MapGenBase ravineGenerator = new MapGenRavine();
 
 	/** The biomes that are used to generate the chunk */
 	private BiomeGenBase[] biomesForGeneration;
@@ -77,9 +71,7 @@ public class ChunkProviderSpace implements IChunkProvider {
 	int[][] field_73219_j = new int[32][32];
 
 	{
-		caveGenerator = TerrainGen.getModdedMapGen(caveGenerator, CAVE);
 		scatteredFeatureGenerator = (MapGenScatteredFeature) TerrainGen.getModdedMapGen(scatteredFeatureGenerator, SCATTERED_FEATURE);
-		ravineGenerator = TerrainGen.getModdedMapGen(ravineGenerator, RAVINE);
 	}
 
 	public ChunkProviderSpace(World world, long seed, boolean mapFeaturesEnabled)
@@ -124,61 +116,8 @@ public class ChunkProviderSpace implements IChunkProvider {
 		//DONT EDIT THS METHOD UNLES YOU KNOW WHAT UR DOING OR MAKE A COPY INCASE U MESS IT UP....
 		//YOU HAVE BE WARNED !!!!!
 
-		byte b0 = 63;
 		this.biomesForGeneration = this.worldObj.getWorldChunkManager().getBiomesForGeneration(this.biomesForGeneration, par1 * 4 - 2, par2 * 4 - 2, 10, 10);
 		this.func_147423_a(par1 * 4, 0, par2 * 4);
-		for (int k = 0; k < 4; ++k) {
-			int l = k * 5;
-			int i1 = (k + 1) * 5;
-			for (int j1 = 0; j1 < 4; ++j1) {
-				int k1 = (l + j1) * 33;
-				int l1 = (l + j1 + 1) * 33;
-				int i2 = (i1 + j1) * 33;
-				int j2 = (i1 + j1 + 1) * 33;
-				for (int k2 = 0; k2 < 32; ++k2) {
-					double d0 = 0.125D;
-					double d1 = this.noiseArray[k1 + k2];
-					double d2 = this.noiseArray[l1 + k2];
-					double d3 = this.noiseArray[i2 + k2];
-					double d4 = this.noiseArray[j2 + k2];
-					double d5 = (this.noiseArray[k1 + k2 + 1] - d1) * d0;
-					double d6 = (this.noiseArray[l1 + k2 + 1] - d2) * d0;
-					double d7 = (this.noiseArray[i2 + k2 + 1] - d3) * d0;
-					double d8 = (this.noiseArray[j2 + k2 + 1] - d4) * d0;
-					for (int l2 = 0; l2 < 8; ++l2) {
-						double d9 = 0.25D;
-						double d10 = d1;
-						double d11 = d2;
-						double d12 = (d3 - d1) * d9;
-						double d13 = (d4 - d2) * d9;
-						for (int i3 = 0; i3 < 4; ++i3) {
-							int j3 = i3 + k * 4 << 12 | 0 + j1 * 4 << 8 | k2 * 8 + l2;
-							short short1 = 256;
-							j3 -= short1;
-							double d14 = 0.25D;
-							double d16 = (d11 - d10) * d14;
-							double d15 = d10 - d16;
-							for (int k3 = 0; k3 < 4; ++k3) {
-								if ((d15 += d16) > 0.0D) {
-									blocks[j3 += short1] = null;//these can be set to custom blocks
-								} else if (k2 * 8 + l2 < b0) {
-									blocks[j3 += short1] = null
-											;//these can be set to custom blocks
-								} else {
-									blocks[j3 += short1] = null;//this is the air block i think.
-								}
-							}
-							d10 += d12;
-							d11 += d13;
-						}
-						d1 += d5;
-						d2 += d6;
-						d3 += d7;
-						d4 += d8;
-					}
-				}
-			}
-		}
 	}
 
 	public void replaceBlocksForBiome(int par1, int par2, Block[] blocks, byte[] par3ArrayOfByte, BiomeGenBase[] par4ArrayOfBiomeGenBase) {
