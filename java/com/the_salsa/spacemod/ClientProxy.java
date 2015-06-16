@@ -1,10 +1,17 @@
 package com.the_salsa.spacemod;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.item.Item;
 import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy extends CommonProxy
 {
+	public static final Map<Item, ModelBiped> armorModels = new HashMap<Item, ModelBiped>();
+	
 	/**
 	 * register Entity renderers
 	 */
@@ -28,5 +35,7 @@ public class ClientProxy extends CommonProxy
 		MinecraftForgeClient.registerItemRenderer(SpaceMod.plasmaSaberRainbow, new RenderPlasmaSaber());
 		MinecraftForgeClient.registerItemRenderer(SpaceMod.blasterPistol, new RenderBlasterPistol());
 		MinecraftForgeClient.registerItemRenderer(SpaceMod.blasterRifle, new RenderBlasterRifle());
+		
+		armorModels.put(SpaceMod.maneuverGear, new ModelManeuverGear(1F));
 	}
 }

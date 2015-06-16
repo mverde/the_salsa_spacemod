@@ -3,6 +3,7 @@ package com.the_salsa.spacemod;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
+import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.DimensionManager;
@@ -38,9 +39,13 @@ public class SpaceMod
     public static Item plasmaSaberPurple;
     public static Item plasmaSaberYellow;
     public static Item plasmaSaberRainbow;
+    public static Item maneuverGear;
     
     //Blocks
     public static Block spaceRock;
+    
+    //ArmorMaterials
+    public static ArmorMaterial maneuverArmor = EnumHelper.addArmorMaterial("maneuverArmor", 15, new int[] { 0, 3, 0, 0 }, 0);
     
     //biomes
     public static BiomeGenBase spacebiome = new BiomeSpace(25).setBiomeName("Space");
@@ -71,6 +76,7 @@ public class SpaceMod
     	plasmaSaberPurple = new ItemPlasmaSaberPurple(plasma, "plasmaSaberPurple");
     	plasmaSaberYellow = new ItemPlasmaSaberYellow(plasma, "plasmaSaberYellow");
     	plasmaSaberRainbow = new ItemPlasmaSaberRainbow(plasma, "plasmaSaberRainbow");
+    	maneuverGear = new ItemManeuverGear(maneuverArmor, 1, 1, "maneuverGear");
     	
     	//Initialize new Blocks
     	spaceRock = new BlockSpaceRock();
@@ -87,6 +93,7 @@ public class SpaceMod
     	GameRegistry.registerItem(plasmaSaberPurple, "PlasmaSaberPurple");
     	GameRegistry.registerItem(plasmaSaberYellow, "PlasmaSaberYellow");
     	GameRegistry.registerItem(plasmaSaberRainbow, "PlasmaSaberRainbow");
+    	GameRegistry.registerItem(maneuverGear, "maneuverGear");
     	
     	//Register new Blocks
     	GameRegistry.registerBlock(spaceRock, "SpaceRock");

@@ -3,8 +3,6 @@ package com.the_salsa.spacemod;
 import java.util.HashMap;
 import java.util.Random;
 
-import com.martin.firstmod.FirstMod;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -18,6 +16,7 @@ import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 
 public class SpaceEventHandler implements IWorldGenerator
@@ -96,62 +95,6 @@ public class SpaceEventHandler implements IWorldGenerator
 			}
 			
 			extendedProperties.setVelocity();
-			
-			/*if (event.player.motionX > 0)
-			{
-				event.player.motionX += 0.01;
-				
-				if (event.player.motionX > 0.15)
-				{
-					event.player.motionX = 0.15;
-				}
-				else if (event.player.motionX < 0.01)
-				{
-					event.player.motionX = 0.01;
-				}
-			}
-			else if (event.player.motionX < 0)
-			{
-				event.player.motionX -= 0.01;
-				
-				if (event.player.motionX < -0.15)
-				{
-					event.player.motionX = -0.15;
-				}
-				else if (event.player.motionX > -0.01)
-				{
-					event.player.motionX = -0.01;
-				}
-			}
-			
-			event.player.motionY += 0.03999999910593033;
-			
-			if (event.player.motionZ > 0)
-			{
-				event.player.motionZ += 0.01;
-				
-				if (event.player.motionZ > 0.15)
-				{
-					event.player.motionZ = 0.15;
-				}
-				else if (event.player.motionZ < 0.01)
-				{
-					event.player.motionZ = 0.01;
-				}
-			}
-			else if (event.player.motionZ < 0)
-			{
-				event.player.motionZ -= 0.01;
-				
-				if (event.player.motionZ < -0.15)
-				{
-					event.player.motionZ = -0.15;
-				}
-				else if (event.player.motionZ > -0.01)
-				{
-					event.player.motionZ = -0.01;
-				}
-			}*/
 		}
 		else if (event.player != null && event.player.getExtendedProperties("ExtendedPropertiesPlayerGravity") != null 
 				&& ((ExtendedPropertiesPlayerGravity) event.player.getExtendedProperties("ExtendedPropertiesPlayerGravity")).getFalling())

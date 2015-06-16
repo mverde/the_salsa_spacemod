@@ -29,7 +29,8 @@ import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 import net.minecraftforge.event.terraingen.TerrainGen;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 
-public class ChunkProviderSpace implements IChunkProvider {
+public class ChunkProviderSpace implements IChunkProvider
+{
 
 	/** RNG. */
 	private Random rand;
