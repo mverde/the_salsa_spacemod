@@ -3,6 +3,10 @@ package com.the_salsa.spacemod;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.martin.firstmod.EntityMartMob;
+import com.martin.firstmod.ModelMartMob;
+import com.martin.firstmod.RenderMart;
+
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -19,6 +23,7 @@ public class ClientProxy extends CommonProxy
 	public void registerRendering()
 	{
 		RenderingRegistry.registerEntityRenderingHandler(EntityBlasterBolt.class, new RenderBlasterBolt());
+		//RenderingRegistry.registerEntityRenderingHandler(EntityMartMob.class,  new RenderMart(new ModelMartMob(), 0.5F));
 	}
 	
 	/**

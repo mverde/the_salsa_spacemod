@@ -1,6 +1,12 @@
 package com.the_salsa.spacemod;
 
+import com.martin.firstmod.EntityMartMob;
+import com.martin.firstmod.EntityMartThrowable;
+
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
@@ -23,6 +29,7 @@ public class SpaceMod
 	//Identifiers
 	public static final String MODID = "the_salsa_spacemod";
     public static final String VERSION = "1.0";
+    public static int startEntityId = 500;
     
     //Materials
     public static ToolMaterial plasma = EnumHelper.addToolMaterial("plasma", 3, 1000, 10.0F, 6.0F, 6);
@@ -100,6 +107,9 @@ public class SpaceMod
     	
     	//Register new Entities
     	EntityRegistry.registerModEntity(EntityBlasterBolt.class, "blasterbolt", 0, this, 80, 3, true);
+    	EntityRegistry.registerModEntity(EntityTrooperBase.class, "entitytrooper", 1, this, 80, 3, true);
+    	registerEntityEgg(EntityTrooperBase.class, 0x000000, 0xffffff);
+		EntityRegistry.addSpawn(EntityTrooperBase.class, 5, 1, 3, EnumCreatureType.monster, spacebiome);
     	
     	//Register new Biomes
     	BiomeDictionary.registerBiomeType(spacebiome, BiomeDictionary.Type.DRY);
@@ -117,5 +127,24 @@ public class SpaceMod
     	//Register EventHandler
     	MinecraftForge.EVENT_BUS.register(handler);
     	FMLCommonHandler.instance().bus().register(handler);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static void registerEntityEgg(Class<? extends Entity> entity, int primaryColor, int secondaryColor)
+    {
+    	int id = getUniqueEntityId();
+    	EntityList.IDtoClassMapping.put(id,  entity);
+    	EntityList.entityEggs.put(id, new EntityList.EntityEggInfo(id, primaryColor, secondaryColor));
+    }
+    
+    public static int getUniqueEntityId()
+    {
+    	do
+    	{
+    		startEntityId++;
+    	}
+    	while (EntityList.getStringFromID(startEntityId) != null);
+    	
+    	return startEntityId;
     }
 }

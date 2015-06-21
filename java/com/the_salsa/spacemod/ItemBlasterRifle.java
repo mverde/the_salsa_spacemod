@@ -17,10 +17,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemBlasterRifle extends ItemBow
 {
-	private static double boltSpeed = 2D;
+	private static double boltSpeed = 2.0D;
 	private static double range = 60.0D;
-	private static double spreadModifier = 0.04;
-	private static float damage = 6F;
+	private static double spreadModifier = 0.04D;
+	private static float damage = 6.0F;
 	private static int fireTicksMax = 4;
 	private static int reloadTicksMax = 80;
 	private static Random rand = new Random();

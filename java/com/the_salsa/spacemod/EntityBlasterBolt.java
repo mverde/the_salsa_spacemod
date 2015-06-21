@@ -3,9 +3,13 @@ package com.the_salsa.spacemod;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 public class EntityBlasterBolt extends EntityThrowable
@@ -54,7 +58,7 @@ public class EntityBlasterBolt extends EntityThrowable
             {
             	EntityPlayer player = (EntityPlayer) p_70184_1_.entityHit;
             	
-            	if (player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemPlasmaSaber
+            	if (shouldPlayerDeflect(player) && player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemPlasmaSaber
             			&& player.isBlocking())
             	{
             		EntityBlasterBolt bolt = new EntityBlasterBolt(player.worldObj, player, this.speed, this.range, this.damage);
@@ -62,7 +66,7 @@ public class EntityBlasterBolt extends EntityThrowable
                     if (!player.worldObj.isRemote)
                     {
                     	this.setDead();
-                    	player.worldObj.playSoundAtEntity(player, SpaceMod.MODID + ":" + "deflect", 1.0F, 1.0F);
+                    	player.worldObj.playSoundAtEntity(player, SpaceMod.MODID + ":" + "deflect", 1.0F, 1.0F + (rand.nextInt(4) * 0.1F));
                         player.worldObj.spawnEntityInWorld(bolt);
                     }
                     
@@ -82,6 +86,20 @@ public class EntityBlasterBolt extends EntityThrowable
         {
             this.setDead();
         }
+    }
+    
+    /**
+     * Checks to see if the player is looking at the mob that it is attempting to deflect BlasterBolts from
+     */
+    private boolean shouldPlayerDeflect(EntityPlayer player)
+    {
+    	Vec3 vec3 = player.getLook(1.0F).normalize();
+        Vec3 vec31 = Vec3.createVectorHelper(this.posX - player.posX, this.boundingBox.minY + (double)(this.height / 2.0F) - (player.posY + (double)player.getEyeHeight()), 
+        		this.posZ - player.posZ);
+        double d0 = vec31.lengthVector();
+        vec31 = vec31.normalize();
+        double d1 = vec3.dotProduct(vec31);
+        return d1 > 1.0D - 0.025D / d0 && player.canEntityBeSeen(this);
     }
     
     /**

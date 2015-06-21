@@ -122,17 +122,17 @@ public class FirstMod
     	GameRegistry.registerTileEntity(TileEntityMart.class, "TE_martTE");
     	GameRegistry.registerWorldGenerator(handler, 0);
     	OreDictionary.registerOre("ingotMart", new ItemStack(martIngot));	//must be after initialization and registration
-    	EntityRegistry.registerModEntity(EntityMartMob.class, "martmob", 0, this, 80, 3, true);
-    	registerEntityEgg(EntityMartMob.class, 0xd8bb9d, 0xa63c1a);
-    	EntityRegistry.registerModEntity(EntityMartThrowable.class, "martthrow", 1, this, 80, 3, true);
+    	//EntityRegistry.registerModEntity(EntityMartMob.class, "martmob", 0, this, 80, 3, true);
+    	//registerEntityEgg(EntityMartMob.class, 0xd8bb9d, 0xa63c1a);
+    	//EntityRegistry.registerModEntity(EntityMartThrowable.class, "martthrow", 1, this, 80, 3, true);
     	
-    	for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
-    	{
-    		if (BiomeGenBase.getBiomeGenArray()[i] != null && !(BiomeGenBase.getBiomeGenArray()[i] instanceof BiomeSpace))
-    		{
-    			EntityRegistry.addSpawn(EntityMartMob.class, 10, 1, 3, EnumCreatureType.monster, BiomeGenBase.getBiomeGenArray()[i]);
-    		}
-    	}
+    	//for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
+    	//{
+    		//if (BiomeGenBase.getBiomeGenArray()[i] != null && !(BiomeGenBase.getBiomeGenArray()[i] instanceof BiomeSpace))
+    		//{
+    			//EntityRegistry.addSpawn(EntityMartMob.class, 10, 1, 3, EnumCreatureType.monster, BiomeGenBase.getBiomeGenArray()[i]);
+    		//}
+    	//}
     	
     	proxy.registerItemRenders();
     }
