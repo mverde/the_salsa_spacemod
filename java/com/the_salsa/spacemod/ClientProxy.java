@@ -42,5 +42,6 @@ public class ClientProxy extends CommonProxy
 		MinecraftForgeClient.registerItemRenderer(SpaceMod.blasterRifle, new RenderBlasterRifle());
 		
 		armorModels.put(SpaceMod.maneuverGear, new ModelManeuverGear(1F));
+		armorModels.put(SpaceMod.oxygenHelmet, new ModelOxygenHelmet(1F));
 	}
 }

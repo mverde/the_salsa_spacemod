@@ -14,11 +14,10 @@ import net.minecraft.world.World;
 
 public class EntityBlasterBolt extends EntityThrowable
 {
-    private static final String __OBFID = "CL_00001722";
-    private static float damage;
-    private static double originX, originY, originZ;
-    private static double range;
-    private static double speed;
+    private float damage;
+    private double originX, originY, originZ;
+    private double range;
+    private double speed;
 
     public EntityBlasterBolt(World p_i1773_1_)
     {
@@ -109,12 +108,7 @@ public class EntityBlasterBolt extends EntityThrowable
     public void onUpdate()
     {
     	if (this.getDistance(originX, originY, originZ) > this.range)
-    	{
-            for (int i = 0; i < 8; ++i)
-            {
-                this.worldObj.spawnParticle("lava", this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-            }
-            
+    	{   
     		if (!this.worldObj.isRemote)
     	    {
     			this.setDead();

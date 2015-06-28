@@ -5,9 +5,9 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenEnd;
+import net.minecraft.world.biome.BiomeGenDesert;
 
-public class BiomeSpace extends BiomeGenEnd
+public class BiomeSpace extends BiomeGenDesert
 {
 	public BiomeSpace(int biomeID)
 	{
@@ -20,6 +20,7 @@ public class BiomeSpace extends BiomeGenEnd
 		this.theBiomeDecorator.cactiPerChunk = 0;
 		this.theBiomeDecorator.deadBushPerChunk = 0;
 		this.setDisableRain();
+		this.setTemperatureRainfall(0F, 0F);
 	}
 	
 	@Override

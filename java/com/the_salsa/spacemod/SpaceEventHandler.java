@@ -1,22 +1,27 @@
 package com.the_salsa.spacemod;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Random;
 
+import com.the_salsa.spacemod.core.EntityTick;
+
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
+import net.minecraftforge.event.entity.item.ItemEvent;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 
 public class SpaceEventHandler implements IWorldGenerator
@@ -40,20 +45,25 @@ public class SpaceEventHandler implements IWorldGenerator
 	public void onEntityConstructing(EntityConstructing event)
 	{
 	    // Register extended entity properties
-	    // Players
-
-	    if (event.entity instanceof EntityPlayer)
-	    {
-	         event.entity.registerExtendedProperties("ExtendedPropertiesPlayerGravity", new ExtendedPropertiesPlayerGravity());
-	    }
+		if (!(event.entity instanceof EntityBlasterBolt))
+		{
+		    event.entity.registerExtendedProperties("ExtendedPropertiesGravity", new ExtendedPropertiesGravity());
+		}
 	}
 	
 	/**
-	 * Used to modify gravity if the player is in a dimension with modified gravity.
+	 * Used to modify gravity and oxygen if the player is in a dimension with modified gravity or no breathable atmosphere.
 	 */
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event)
 	{	
+		if (event.player.dimension == 2 && !event.player.capabilities.isCreativeMode && 
+				(event.player.getEquipmentInSlot(4) == null || !(event.player.getEquipmentInSlot(4).getItem() instanceof ItemOxygenHelmet)))
+		{
+			//find out how to use rendergameoverlay and another extended property instead of this to have suffocation work like drowning
+			event.player.attackEntityFrom(DamageSource.drown, 0.5F);
+		}
+		
 		if (event.player.dimension == 2 && !event.player.capabilities.isCreativeMode && 
 				(event.player.motionY < -0.0784000015258789D || event.player.motionY > -0.0784000015258789D))
 		{	
@@ -68,11 +78,11 @@ public class SpaceEventHandler implements IWorldGenerator
 				playerMP.setPositionAndUpdate(playerMP.posX, 300D, playerMP.posZ);
 			}
 			
-			ExtendedPropertiesPlayerGravity extendedProperties;
+			ExtendedPropertiesGravity extendedProperties;
 			
-			if (event.player.getExtendedProperties("ExtendedPropertiesPlayerGravity") != null)
+			if (event.player.getExtendedProperties("ExtendedPropertiesGravity") != null)
 			{
-				extendedProperties = (ExtendedPropertiesPlayerGravity) event.player.getExtendedProperties("ExtendedPropertiesPlayerGravity");
+				extendedProperties = (ExtendedPropertiesGravity) event.player.getExtendedProperties("ExtendedPropertiesGravity");
 			}
 			else
 			{
@@ -96,10 +106,56 @@ public class SpaceEventHandler implements IWorldGenerator
 			
 			extendedProperties.setVelocity();
 		}
-		else if (event.player != null && event.player.getExtendedProperties("ExtendedPropertiesPlayerGravity") != null 
-				&& ((ExtendedPropertiesPlayerGravity) event.player.getExtendedProperties("ExtendedPropertiesPlayerGravity")).getFalling())
+		else if (event.player != null && event.player.getExtendedProperties("ExtendedPropertiesGravity") != null 
+				&& ((ExtendedPropertiesGravity) event.player.getExtendedProperties("ExtendedPropertiesGravity")).getFalling())
 		{
-			((ExtendedPropertiesPlayerGravity) event.player.getExtendedProperties("ExtendedPropertiesPlayerGravity")).setFalling(false);
+			((ExtendedPropertiesGravity) event.player.getExtendedProperties("ExtendedPropertiesGravity")).setFalling(false);
+		}
+	}
+	
+	/**
+	 * Used to make nonplayer entities have no gravity in space
+	 */
+	@SubscribeEvent
+	public void onEntityTick(EntityTick event)
+	{
+		if (event.entity.dimension == 2 &&
+				(event.entity.motionY < -0.0784000015258789D || event.entity.motionY > -0.0784000015258789D))
+		{	
+			event.entity.fallDistance = 0F;
+			
+			ExtendedPropertiesGravity extendedProperties;
+			
+			if (event.entity.getExtendedProperties("ExtendedPropertiesGravity") != null)
+			{
+				extendedProperties = (ExtendedPropertiesGravity) event.entity.getExtendedProperties("ExtendedPropertiesGravity");
+			}
+			else
+			{
+				return;
+			}
+			
+			if (extendedProperties.isInGravitationalField())
+			{
+				return;
+			}
+			else if (!extendedProperties.getFalling())
+			{
+				extendedProperties.setFalling(true);
+				extendedProperties.updateVelocity();
+			}
+			
+			if (event.entity.isCollidedHorizontally)
+			{
+				extendedProperties.grabBlock();
+			}
+			
+			extendedProperties.setVelocity();
+		}
+		else if (event.entity != null && event.entity.getExtendedProperties("ExtendedPropertiesGravity") != null 
+				&& ((ExtendedPropertiesGravity) event.entity.getExtendedProperties("ExtendedPropertiesGravity")).getFalling())
+		{
+			((ExtendedPropertiesGravity) event.entity.getExtendedProperties("ExtendedPropertiesGravity")).setFalling(false);
 		}
 	}
 	

@@ -47,12 +47,13 @@ public class SpaceMod
     public static Item plasmaSaberYellow;
     public static Item plasmaSaberRainbow;
     public static Item maneuverGear;
+    public static Item oxygenHelmet;
     
     //Blocks
     public static Block spaceRock;
     
     //ArmorMaterials
-    public static ArmorMaterial maneuverArmor = EnumHelper.addArmorMaterial("maneuverArmor", 15, new int[] { 0, 3, 0, 0 }, 0);
+    public static ArmorMaterial maneuverArmor = EnumHelper.addArmorMaterial("maneuverArmor", 15, new int[] { 1, 3, 0, 0 }, 0);
     
     //biomes
     public static BiomeGenBase spacebiome = new BiomeSpace(25).setBiomeName("Space");
@@ -84,6 +85,7 @@ public class SpaceMod
     	plasmaSaberYellow = new ItemPlasmaSaberYellow(plasma, "plasmaSaberYellow");
     	plasmaSaberRainbow = new ItemPlasmaSaberRainbow(plasma, "plasmaSaberRainbow");
     	maneuverGear = new ItemManeuverGear(maneuverArmor, 1, 1, "maneuverGear");
+    	oxygenHelmet = new ItemOxygenHelmet(maneuverArmor, 1, 0, "oxygenHelmet");
     	
     	//Initialize new Blocks
     	spaceRock = new BlockSpaceRock();
@@ -101,6 +103,7 @@ public class SpaceMod
     	GameRegistry.registerItem(plasmaSaberYellow, "PlasmaSaberYellow");
     	GameRegistry.registerItem(plasmaSaberRainbow, "PlasmaSaberRainbow");
     	GameRegistry.registerItem(maneuverGear, "maneuverGear");
+    	GameRegistry.registerItem(oxygenHelmet, "OxygenHelmet");
     	
     	//Register new Blocks
     	GameRegistry.registerBlock(spaceRock, "SpaceRock");
@@ -109,7 +112,9 @@ public class SpaceMod
     	EntityRegistry.registerModEntity(EntityBlasterBolt.class, "blasterbolt", 0, this, 80, 3, true);
     	EntityRegistry.registerModEntity(EntityTrooperBase.class, "entitytrooper", 1, this, 80, 3, true);
     	registerEntityEgg(EntityTrooperBase.class, 0x000000, 0xffffff);
-		EntityRegistry.addSpawn(EntityTrooperBase.class, 5, 1, 3, EnumCreatureType.monster, spacebiome);
+		EntityRegistry.addSpawn(EntityTrooperBase.class, 3, 1, 3, EnumCreatureType.ambient, spacebiome);
+    	//EntityRegistry.registerModEntity(EntitySpaceFighter.class, "entityspacefighter", 2, this, 80, 3, true);
+    	//registerEntityEgg(EntitySpaceFighter.class, 0x002000, 0x0fffff);
     	
     	//Register new Biomes
     	BiomeDictionary.registerBiomeType(spacebiome, BiomeDictionary.Type.DRY);
