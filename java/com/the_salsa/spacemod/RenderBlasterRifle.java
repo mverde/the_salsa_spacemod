@@ -19,14 +19,14 @@ public class RenderBlasterRifle implements IItemRenderer
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type)
 	{
-		return true;
+		return type != ItemRenderType.INVENTORY;
 	}
 
 	@Override
 	public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item,
 			ItemRendererHelper helper)
 	{
-		return true;
+		return type != ItemRenderType.INVENTORY;
 	}
 
 	@Override
@@ -38,9 +38,6 @@ public class RenderBlasterRifle implements IItemRenderer
 		switch (type)
 		{
 		case INVENTORY:
-			GL11.glScalef(0.5F, 0.5F, 0.5F);
-			GL11.glTranslatef(0F, 0.525F, 0.2F);
-			GL11.glRotatef(120F, 1F, 0F, 0.35F);
 			break;
 		case EQUIPPED:
 			GL11.glTranslatef(0.025F, -0.25F, 0.025F);
@@ -49,9 +46,10 @@ public class RenderBlasterRifle implements IItemRenderer
 			break;
 		case EQUIPPED_FIRST_PERSON:
 			GL11.glScalef(0.9F, 0.9F, 0.9F);
-			GL11.glTranslatef(0.2F, 0.575F, -0.245F);
+			GL11.glTranslatef(0.2F, 0.4975F, -0.2F);
 			GL11.glRotatef(90F, 1F, 0.5F, -4F);
 			GL11.glRotatef(90F, 0.75F, 0.25F, -2.95F);
+			GL11.glRotatef(10F, 0.2F, 0.9F, 0.5F);
 			break;
 		default:
 			GL11.glScalef(0.66F, 0.66F, 0.66F);

@@ -8,9 +8,12 @@ import com.martin.firstmod.ModelMartMob;
 import com.martin.firstmod.RenderMart;
 
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.FMLCommonHandler;
 
 public class ClientProxy extends CommonProxy
 {
@@ -22,8 +25,18 @@ public class ClientProxy extends CommonProxy
 	@Override
 	public void registerRendering()
 	{
-		RenderingRegistry.registerEntityRenderingHandler(EntityBlasterBolt.class, new RenderBlasterBolt());
-		//RenderingRegistry.registerEntityRenderingHandler(EntityMartMob.class,  new RenderMart(new ModelMartMob(), 0.5F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityBlasterBolt.class, new RenderBlasterBolt(new ModelBlasterBolt()));
+	}
+	
+	@Override
+	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
+	{
+		if (ID == SpaceMod.GUI_CUSTOM_INV)
+		{
+			return new GuiCustomPlayerInventory(player, player.inventory, ((ExtendedPropertiesPlayer) player.getExtendedProperties("ExtendedPropertiesPlayer")).inventory);
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -31,7 +44,7 @@ public class ClientProxy extends CommonProxy
 	 */
 	@Override
 	public void registerItemRenders()
-	{
+	{	
 		MinecraftForgeClient.registerItemRenderer(SpaceMod.plasmaSaberBlue, new RenderPlasmaSaber());
 		MinecraftForgeClient.registerItemRenderer(SpaceMod.plasmaSaberGreen, new RenderPlasmaSaber());
 		MinecraftForgeClient.registerItemRenderer(SpaceMod.plasmaSaberRed, new RenderPlasmaSaber());

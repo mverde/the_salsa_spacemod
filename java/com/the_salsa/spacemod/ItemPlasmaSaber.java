@@ -14,7 +14,7 @@ public abstract class ItemPlasmaSaber extends ItemSword
 	{
 		super(material);
 		setUnlocalizedName(SpaceMod.MODID + "_" + name);
-		setTextureName(SpaceMod.MODID + ":" + name);
+		setTextureName(SpaceMod.MODID + ":" + "plasmaSaber");
 	}
 	
 	/**
@@ -45,7 +45,7 @@ public abstract class ItemPlasmaSaber extends ItemSword
 			
 			if (!player.worldObj.isRemote)
 			{
-				player.worldObj.playSoundAtEntity(player, SpaceMod.MODID + ":" + "saberon", 1F, 1F);
+				player.worldObj.playSoundAtEntity(player, SpaceMod.MODID + ":" + "saberon", 0.6F, 1.0F);
 			}
 		}
 		else if ((player.getHeldItem() == null || !player.getHeldItem().isItemEqual(p_77663_1_))
@@ -55,7 +55,7 @@ public abstract class ItemPlasmaSaber extends ItemSword
 			
 			if (!player.worldObj.isRemote)
 			{
-				player.worldObj.playSoundAtEntity(player, SpaceMod.MODID + ":" + "saberoff", 1F, 1F);
+				player.worldObj.playSoundAtEntity(player, SpaceMod.MODID + ":" + "saberoff", 0.6F, 1.0F);
 			}
 		}
 	}
@@ -63,7 +63,7 @@ public abstract class ItemPlasmaSaber extends ItemSword
 	@Override
     public boolean hitEntity(ItemStack p_77644_1_, EntityLivingBase p_77644_2_, EntityLivingBase p_77644_3_)
     {
-        p_77644_3_.worldObj.playSoundAtEntity(p_77644_3_, SpaceMod.MODID + ":" +  "hit", 1F, 1F);
+        p_77644_3_.worldObj.playSoundAtEntity(p_77644_3_, SpaceMod.MODID + ":" +  "hit", 0.6F, 1.0F);
         super.hitEntity(p_77644_1_, p_77644_2_, p_77644_3_);
         return true;
     }
@@ -71,7 +71,7 @@ public abstract class ItemPlasmaSaber extends ItemSword
 	@Override
 	public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack)
     {
-		entityLiving.worldObj.playSoundAtEntity(entityLiving, SpaceMod.MODID + ":" + "swing", 1F, 1F);
+		entityLiving.worldObj.playSoundAtEntity(entityLiving, SpaceMod.MODID + ":" + "swing", 0.6F, 1.0F);
 		super.onEntitySwing(entityLiving, stack);
 		return false;
     }

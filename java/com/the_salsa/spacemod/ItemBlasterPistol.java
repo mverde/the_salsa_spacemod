@@ -1,219 +1,30 @@
 package com.the_salsa.spacemod;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.ItemBow;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemBlasterPistol extends ItemBow
-{
-	private static double boltSpeed = 1.2D;
-	private static double range = 40.0D;
-	private static float damage = 7.5F;
-	private static int reloadTicksMax = 60;
-	private static int fireTicksMax = 10;
-	
+public class ItemBlasterPistol extends ItemGunGeneric
+{	
 	/**
 	 * max damage - 2 = ammo capacity
 	 */
-	public ItemBlasterPistol(String name)
+	public ItemBlasterPistol(String name, double boltSpeed, double range, float damage, int fireTicksMax, int reloadTicksMax, int ammoCapacity)
 	{
-		super();
-		setUnlocalizedName(SpaceMod.MODID + "_" + name);
-		setTextureName(SpaceMod.MODID + ":" + name);
-		setCreativeTab(CreativeTabs.tabCombat);
-		this.setMaxDamage(22);
+		super(name, boltSpeed, range, damage, fireTicksMax, reloadTicksMax, ammoCapacity);
 	}
-	
-	/**
-	 * this method used to set up NBTTag for each BlasterPistol
-	 */
-	@Override
-	public void onCreated(ItemStack itemStack, World world, EntityPlayer player)
-	{
-	    itemStack.stackTagCompound = new NBTTagCompound();
-	    itemStack.stackTagCompound.setInteger("reloadTicks", 0);
-	    itemStack.stackTagCompound.setInteger("fireTicks", fireTicksMax);
-	    itemStack.stackTagCompound.setBoolean("reloadTimerOn", false);
-	    itemStack.stackTagCompound.setBoolean("fireTimerOn", false);
-	}
-	
-    /**
-     * this method overridden to stop ItemBlasterPistol from releasing an arrow
-     */
-	@Override
-	public void onPlayerStoppedUsing(ItemStack p_77615_1_, World p_77615_2_, EntityPlayer p_77615_3_, int p_77615_4_)
-	{	
-		return;
-	}
-	
-    /**
-     * shoots an EntityBlasterBolt if the player is in Creative mode or has ammo; reloads if no ammo
-     */
-	@Override
-    public ItemStack onItemRightClick(ItemStack p_77659_1_, World p_77659_2_, EntityPlayer p_77659_3_)
-    {	
-		if (p_77659_1_.stackTagCompound == null || p_77659_1_.stackTagCompound.getBoolean("reloadTimerOn") || 
-				p_77659_1_.stackTagCompound.getInteger("fireTicks") != fireTicksMax)
-		{
-			return p_77659_1_;
-		}
-		
-		if (p_77659_3_.capabilities.isCreativeMode)
-        {
-        	p_77659_3_.setItemInUse(p_77659_1_, this.getMaxItemUseDuration(p_77659_1_));
-        	
-        	fire(p_77659_2_, p_77659_3_);
-        }
-        else if (p_77659_1_.getItemDamage() < this.getMaxDamage())
-        {
-        	p_77659_3_.setItemInUse(p_77659_1_, this.getMaxItemUseDuration(p_77659_1_));
-        	
-            p_77659_1_.damageItem(1, p_77659_3_);
-            
-            if (p_77659_1_.getItemDamage() == this.getMaxDamage() - 1)
-            {	
-            	if (!p_77659_2_.isRemote && p_77659_3_.inventory.hasItem(SpaceMod.gasCanister))
-            	{
-            		p_77659_1_.stackTagCompound.setBoolean("reloadTimerOn", true);
-            		
-            		p_77659_2_.playSoundAtEntity(p_77659_3_, SpaceMod.MODID + ":" + "reload", 1.0F, 1.0F);
-                    p_77659_1_.damageItem(-(this.getMaxDamage() - 1), p_77659_3_);
-                	p_77659_3_.inventory.consumeInventoryItem(SpaceMod.gasCanister);
-                	p_77659_3_.inventory.addItemStackToInventory(new ItemStack(SpaceMod.emptyCanister));
-            	}
-            	else
-            	{
-                	p_77659_1_.damageItem(-1, p_77659_3_);
-            	}
-            }
-            else if (p_77659_1_.getItemDamage() < this.getMaxDamage() - 1)
-            {
-            	p_77659_3_.setItemInUse(p_77659_1_, this.getMaxItemUseDuration(p_77659_1_));
-            	
-            	fire(p_77659_2_, p_77659_3_);
-            }
-        }
-		
-        p_77659_1_.stackTagCompound.setBoolean("fireTimerOn", true);
-        return p_77659_1_;
-    }
 	
 	/**
 	 * shoots a BlasterBolt
 	 */
+	@Override
 	public void fire(World world, EntityPlayer player)
 	{
 		EntityBlasterBolt bolt = new EntityBlasterBolt(world, player, boltSpeed, range, damage);
 
         if (!world.isRemote)
         {
-            world.playSoundAtEntity(player, SpaceMod.MODID + ":" + "blaster.pistol", 1.0F, 1.0F);
+            world.playSoundAtEntity(player, SpaceMod.MODID + ":" + "blaster.pistol", 0.75F, 1.0F);
             world.spawnEntityInWorld(bolt);
         }
 	}
-	
-	/**
-     * Called each tick as long the item is on a player inventory. Uses by maps to check if is on a player hand and
-     * update it's contents.
-     * 
-     * Used here to implement a reloading timer when the player is out of ammo.
-     */
-	@Override
-    public void onUpdate(ItemStack p_77663_1_, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_)
-	{
-		if (p_77663_1_.stackTagCompound == null)
-		{
-			p_77663_1_.stackTagCompound = new NBTTagCompound();
-			p_77663_1_.stackTagCompound.setInteger("reloadTicks", 0);
-			p_77663_1_.stackTagCompound.setInteger("fireTicks", fireTicksMax);
-		    p_77663_1_.stackTagCompound.setBoolean("reloadTimerOn", false);
-		    p_77663_1_.stackTagCompound.setBoolean("fireTimerOn", false);
-		}
-		else
-		{
-			if (p_77663_1_.stackTagCompound.getBoolean("reloadTimerOn"))
-			{
-				int ticks = p_77663_1_.stackTagCompound.getInteger("reloadTicks") + 1;
-				
-				if (ticks >= reloadTicksMax)
-				{	
-					p_77663_1_.stackTagCompound.setInteger("reloadTicks", 0);
-					p_77663_1_.stackTagCompound.setBoolean("reloadTimerOn", false);
-				}
-				else
-				{
-					p_77663_1_.stackTagCompound.setInteger("reloadTicks", ticks);
-				}
-			}
-			
-			if (p_77663_1_.stackTagCompound.getBoolean("fireTimerOn"))
-			{
-				int ticks = p_77663_1_.stackTagCompound.getInteger("fireTicks") - 1;
-				
-				if (ticks <= 0)
-				{
-					p_77663_1_.stackTagCompound.setInteger("fireTicks", fireTicksMax);
-					p_77663_1_.stackTagCompound.setBoolean("fireTimerOn", false);
-				}
-				else
-				{
-					p_77663_1_.stackTagCompound.setInteger("fireTicks", ticks);
-				}
-			}
-		}
-		
-		super.onUpdate(p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
-	}
-	
-    /**
-     * returns the action that specifies what animation to play when the items is being used
-     */
-    public EnumAction getItemUseAction(ItemStack p_77661_1_)
-    {
-        return EnumAction.none;
-    }
-    
-    /**
-     * return the enchantability factor of the item, most of the time is based on material. (not this time)
-     */
-    @Override
-    public int getItemEnchantability()
-    {
-        return 0;
-    }
-    
-    @SideOnly(Side.CLIENT)
-    @Override
-    public void registerIcons(IIconRegister p_94581_1_)
-    {
-        return;
-    }
-
-    /**
-     * used to cycle through icons based on their used duration, i.e. for the bow
-     */
-    @SideOnly(Side.CLIENT)
-    @Override
-    public IIcon getItemIconForUseDuration(int p_94599_1_)
-    {
-        return null;
-    }
-    
-    /**
-     * How long it takes to use or consume an item
-     */
-    @Override
-    public int getMaxItemUseDuration(ItemStack p_77626_1_)
-    {
-        return 72000;
-    }
 }

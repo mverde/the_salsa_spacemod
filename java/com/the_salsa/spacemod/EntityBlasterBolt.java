@@ -3,13 +3,10 @@ package com.the_salsa.spacemod;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityThrowable;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
 public class EntityBlasterBolt extends EntityThrowable
@@ -39,11 +36,28 @@ public class EntityBlasterBolt extends EntityThrowable
         this.originZ = this.posZ;
         this.range = range;
         this.speed = speed;
+        this.setThrowableHeading(this.motionX, this.motionY, this.motionZ, this.func_70182_d(), 1.0F);
     }
 
     public EntityBlasterBolt(World p_i1775_1_, double p_i1775_2_, double p_i1775_4_, double p_i1775_6_)
     {
         super(p_i1775_1_, p_i1775_2_, p_i1775_4_, p_i1775_6_);
+    }
+    
+    /**
+     * sets the light level of the block that this entity occupies in order to make it "glow" WIP!!!!
+     */
+    private void addLight()
+    {
+    	  this.worldObj.setLightValue(EnumSkyBlock.Block, (int) this.posX, (int) this.posY, (int) this.posZ, 5);
+    	  this.worldObj.markBlockRangeForRenderUpdate((int) this.posX, (int) this.posY, (int) this.posX, 2, 2, 2);
+    	  this.worldObj.markBlockForUpdate((int) this.posX, (int) this.posY, (int) this.posZ);
+    	  this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX, (int) this.posY + 1, (int) this.posZ);
+    	  this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX, (int) this.posY - 1, (int) this.posZ);
+    	  this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX + 1, (int) this.posY, (int) this.posZ);
+    	  this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX - 1, (int) this.posY, (int) this.posZ);
+    	  this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX, (int) this.posY, (int) this.posZ + 1);
+    	  this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX, (int) this.posY, (int) this.posZ - 1);
     }
 
     /**
@@ -51,6 +65,8 @@ public class EntityBlasterBolt extends EntityThrowable
      */
     protected void onImpact(MovingObjectPosition p_70184_1_)
     {	
+    	this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX, (int) this.posY, (int) this.posZ);
+    	
         if (p_70184_1_.entityHit != null)
         {  	
             if (p_70184_1_.entityHit instanceof EntityPlayer)
@@ -65,7 +81,7 @@ public class EntityBlasterBolt extends EntityThrowable
                     if (!player.worldObj.isRemote)
                     {
                     	this.setDead();
-                    	player.worldObj.playSoundAtEntity(player, SpaceMod.MODID + ":" + "deflect", 1.0F, 1.0F + (rand.nextInt(4) * 0.1F));
+                    	player.worldObj.playSoundAtEntity(player, SpaceMod.MODID + ":" + "deflect", 0.75F, 1.0F + (rand.nextInt(4) * 0.1F));
                         player.worldObj.spawnEntityInWorld(bolt);
                     }
                     
@@ -107,6 +123,10 @@ public class EntityBlasterBolt extends EntityThrowable
      */
     public void onUpdate()
     {
+    	//if (this.isDead)
+    	//{
+    	this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX, (int) this.posY, (int) this.posZ);
+    	//}
     	if (this.getDistance(originX, originY, originZ) > this.range)
     	{   
     		if (!this.worldObj.isRemote)
@@ -114,7 +134,7 @@ public class EntityBlasterBolt extends EntityThrowable
     			this.setDead();
     	    }
     	}
-    	
+    	addLight();
     	super.onUpdate();
     }
     

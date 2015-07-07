@@ -138,10 +138,10 @@ public class ModelBlasterRifle extends ModelBase
 	  grip.render(f5);
 	  scopeMount1.render(f5);
 	  GL11.glEnable(GL11.GL_BLEND);
+	  scope.render(f5);
 	  scopeLens.render(f5);
 	  scopeLens2.render(f5);
 	  GL11.glDisable(GL11.GL_BLEND);
-	  scope.render(f5);
 	  stock1.render(f5);
 	  stock2.render(f5);
 	  triggerRing1.render(f5);

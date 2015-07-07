@@ -1,9 +1,7 @@
 package com.the_salsa.spacemod;
 
-import com.martin.firstmod.EntityMartMob;
-import com.martin.firstmod.EntityMartThrowable;
-
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EnumCreatureType;
@@ -15,21 +13,34 @@ import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
+
+import com.the_salsa.spacemod.OxygenInventoryPacket.InventoryMessageHandler;
+import com.the_salsa.spacemod.OxygenPacket.OxygenMessageHandler;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid = SpaceMod.MODID, version = SpaceMod.VERSION)
 public class SpaceMod
 {
 	//Identifiers
 	public static final String MODID = "the_salsa_spacemod";
+	@Instance(MODID)
+	public static SpaceMod instance;
     public static final String VERSION = "1.0";
     public static int startEntityId = 500;
+    private static int modGuiIndex = 0;
+    public static final int GUI_CUSTOM_INV = modGuiIndex++;
     
     //Materials
     public static ToolMaterial plasma = EnumHelper.addToolMaterial("plasma", 3, 1000, 10.0F, 6.0F, 6);
@@ -61,10 +72,16 @@ public class SpaceMod
     //dimensions
     public static int dimensionSpace = 2;
     
+    //proxies
     @SidedProxy(clientSide = "com.the_salsa.spacemod.ClientProxy", serverSide = "com.the_salsa.spacemod.CommonProxy")
     public static CommonProxy proxy;
     
-    SpaceEventHandler handler = new SpaceEventHandler();
+    //event handlers
+    SpaceEventHandler handler = new SpaceEventHandler(Minecraft.getMinecraft());
+    KeyHandler keyHandler = new KeyHandler();
+    
+    //network channels
+    public static SimpleNetworkWrapper wrapper;
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -72,11 +89,16 @@ public class SpaceMod
     	//Register Entity renderers
     	proxy.registerRendering();
     	
+    	//Register Packets
+    	wrapper = NetworkRegistry.INSTANCE.newSimpleChannel("oxygenchannel");
+    	wrapper.registerMessage(OxygenMessageHandler.class, OxygenPacket.class, 0, Side.CLIENT);
+    	wrapper.registerMessage(InventoryMessageHandler.class, OxygenInventoryPacket.class, 1, Side.SERVER);
+    	
     	//Initialize new Items
-    	blasterPistol = new ItemBlasterPistol("blasterPistol");
+    	blasterPistol = new ItemBlasterPistol("blasterPistol", 4.0D, 40.0D, 9.0F, 10, 20, 20);
     	gasCanister = new ItemSpaceGeneric("gasCanister", 1);
     	emptyCanister = new ItemSpaceGeneric("emptyCanister", 16);
-    	blasterRifle = new ItemBlasterRifle("blasterRifle");
+    	blasterRifle = new ItemBlasterRifle("blasterRifle", 5.0D, 60.0D, 6.0F, 3, 40, 40);
     	spaceTeleporter = new ItemSpaceTeleporter("spaceTeleporter");
     	plasmaSaberBlue = new ItemPlasmaSaberBlue(plasma, "plasmaSaberBlue");
     	plasmaSaberGreen = new ItemPlasmaSaberGreen(plasma, "plasmaSaberGreen");
@@ -129,9 +151,17 @@ public class SpaceMod
     	//Register Item renderers
     	proxy.registerItemRenders();
     	
-    	//Register EventHandler
+    	//Register EventHandlers
     	MinecraftForge.EVENT_BUS.register(handler);
     	FMLCommonHandler.instance().bus().register(handler);
+		FMLCommonHandler.instance().bus().register(keyHandler);
+    }
+    
+    @EventHandler
+    public void init(FMLInitializationEvent event)
+    {
+    	//Register GuiHandler
+    	NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
     }
     
     @SuppressWarnings("unchecked")

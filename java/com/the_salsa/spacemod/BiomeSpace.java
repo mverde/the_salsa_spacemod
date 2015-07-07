@@ -6,8 +6,9 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenDesert;
+import net.minecraft.world.biome.BiomeGenHell;
 
-public class BiomeSpace extends BiomeGenDesert
+public class BiomeSpace extends BiomeGenHell
 {
 	public BiomeSpace(int biomeID)
 	{

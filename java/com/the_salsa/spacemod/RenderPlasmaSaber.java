@@ -20,14 +20,14 @@ public class RenderPlasmaSaber implements IItemRenderer
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type)
 	{
-		return true;
+		return type != ItemRenderType.INVENTORY;
 	}
 
 	@Override
 	public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item,
 			ItemRendererHelper helper)
 	{
-		return true;
+		return type != ItemRenderType.INVENTORY;
 	}
 	
 	public void chooseTexture(Item item)
@@ -71,10 +71,6 @@ public class RenderPlasmaSaber implements IItemRenderer
 		switch (type)
 		{
 		case INVENTORY:
-			GL11.glScalef(0.8F, 0.8F, 0.8F);
-			GL11.glTranslatef(0.25F, 0.55F, 0F);
-			GL11.glRotatef(-230F, 1F, 0F, 0F);
-			chooseTexture(null);
 			break;
 		case EQUIPPED:
 			GL11.glTranslatef(0.1F, 0.75F, 0.25F);
