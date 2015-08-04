@@ -19,7 +19,7 @@ public class CommonProxy implements IGuiHandler
 	{
 		if (ID == SpaceMod.GUI_CUSTOM_INV)
 		{
-			return new ContainerOxygenTanks(player, player.inventory, ((ExtendedPropertiesPlayer) player.getExtendedProperties("ExtendedPropertiesPlayer")).inventory);
+			return null; //new ContainerOxygenTanks(player, ((ExtendedPropertiesPlayer) player.getExtendedProperties("ExtendedPropertiesPlayer")).inventory);
 		}
 		
 		return null;
@@ -28,6 +28,11 @@ public class CommonProxy implements IGuiHandler
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
 	{
+		if (ID == SpaceMod.GUI_CUSTOM_INV)
+		{
+			return null; //new GuiCustomPlayerInventory(player, ((ExtendedPropertiesPlayer) player.getExtendedProperties("ExtendedPropertiesPlayer")).inventory);
+		}
+		
 		return null;
 	}
 }

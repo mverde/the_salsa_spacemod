@@ -63,7 +63,8 @@ public class RenderPlasmaSaber implements IItemRenderer
 	}
 
 	@Override
-	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+	public void renderItem(ItemRenderType type, ItemStack item, Object... data)
+	{
 		GL11.glPushMatrix();
 		
 		GL11.glScalef(2F, 2F, 2F);

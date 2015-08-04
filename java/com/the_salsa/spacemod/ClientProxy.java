@@ -10,6 +10,7 @@ import com.martin.firstmod.RenderMart;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -25,18 +26,9 @@ public class ClientProxy extends CommonProxy
 	@Override
 	public void registerRendering()
 	{
-		RenderingRegistry.registerEntityRenderingHandler(EntityBlasterBolt.class, new RenderBlasterBolt(new ModelBlasterBolt()));
-	}
-	
-	@Override
-	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
-	{
-		if (ID == SpaceMod.GUI_CUSTOM_INV)
-		{
-			return new GuiCustomPlayerInventory(player, player.inventory, ((ExtendedPropertiesPlayer) player.getExtendedProperties("ExtendedPropertiesPlayer")).inventory);
-		}
-		
-		return null;
+		RenderingRegistry.registerEntityRenderingHandler(EntityBlasterBolt.class, new RenderBlasterBolt(new ModelBlasterBolt(), new ResourceLocation(SpaceMod.MODID, "models/entities/blasterbolt.png")));
+		RenderingRegistry.registerEntityRenderingHandler(EntityPlasmaRocket.class, new RenderPlasmaRocket(new ModelPlasmaRocket(), new ResourceLocation(SpaceMod.MODID, "models/entities/plasmarocket.png")));
+		RenderingRegistry.registerEntityRenderingHandler(EntityBasicShip.class, new RenderBasicShip(new ModelBasicShip(), new ResourceLocation(SpaceMod.MODID, "models/entities/basicship.png")));
 	}
 	
 	/**
@@ -53,6 +45,7 @@ public class ClientProxy extends CommonProxy
 		MinecraftForgeClient.registerItemRenderer(SpaceMod.plasmaSaberRainbow, new RenderPlasmaSaber());
 		MinecraftForgeClient.registerItemRenderer(SpaceMod.blasterPistol, new RenderBlasterPistol());
 		MinecraftForgeClient.registerItemRenderer(SpaceMod.blasterRifle, new RenderBlasterRifle());
+		MinecraftForgeClient.registerItemRenderer(SpaceMod.rocketLauncher, new RenderRocketLauncher());
 		
 		armorModels.put(SpaceMod.maneuverGear, new ModelManeuverGear(1F));
 		armorModels.put(SpaceMod.oxygenHelmet, new ModelOxygenHelmet(1F));

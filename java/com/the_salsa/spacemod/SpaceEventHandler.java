@@ -9,10 +9,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenMinable;
+import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -35,12 +39,56 @@ public class SpaceEventHandler extends Gui implements IWorldGenerator
 	private static final int BUFF_ICON_BASE_U_OFFSET = 0;
 	private static final int BUFF_ICON_BASE_V_OFFSET = 0;
 	private static final int BUFF_ICONS_PER_ROW = 2;
+	private static float fovMod = 0.0F;
 	
 	public SpaceEventHandler(Minecraft minecraft)
 	{
 		super();
 		this.mc = minecraft;
 	}
+	
+    /**
+     * sets the light level of the block that this entity occupies in order to make it "glow"
+     */
+    private void addLight(EntityPlayer entity)
+    {
+    	entity.worldObj.setLightValue(EnumSkyBlock.Block, (int)entity.posX, (int)entity.posY, (int)entity.posZ, 7);
+        entity.worldObj.markBlockRangeForRenderUpdate((int)entity.posX, (int)entity.posY, (int)entity.posX, 12, 12, 12);
+        entity.worldObj.markBlockForUpdate((int)entity.posX, (int)entity.posY, (int)entity.posZ);
+    }
+    
+    /**
+     * updates the light level of blocks surrounding the entity so that the "glow" goes away as the entity passes by
+     */
+    private void updateLight(EntityPlayer entity)
+    {
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX, (int)entity.posY +1, (int)entity.posZ);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX +1, (int)entity.posY +1, (int)entity.posZ);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX +1, (int)entity.posY +1, (int)entity.posZ +1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX +1, (int)entity.posY +1, (int)entity.posZ -1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX -1, (int)entity.posY +1, (int)entity.posZ +1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX -1, (int)entity.posY +1, (int)entity.posZ -1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX -1, (int)entity.posY +1, (int)entity.posZ);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX, (int)entity.posY +1, (int)entity.posZ +1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX, (int)entity.posY +1, (int)entity.posZ -1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX, (int)entity.posY -1, (int)entity.posZ);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX +1, (int)entity.posY -1, (int)entity.posZ);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX +1, (int)entity.posY -1, (int)entity.posZ +1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX +1, (int)entity.posY -1, (int)entity.posZ -1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX -1, (int)entity.posY -1, (int)entity.posZ +1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX -1, (int)entity.posY -1, (int)entity.posZ -1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX -1, (int)entity.posY -1, (int)entity.posZ);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX, (int)entity.posY -1, (int)entity.posZ +1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX, (int)entity.posY -1, (int)entity.posZ -1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX +1, (int)entity.posY, (int)entity.posZ);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX +1, (int)entity.posY, (int)entity.posZ +1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX +1, (int)entity.posY, (int)entity.posZ -1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX -1, (int)entity.posY, (int)entity.posZ +1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX -1, (int)entity.posY, (int)entity.posZ -1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX -1, (int)entity.posY, (int)entity.posZ);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX, (int)entity.posY, (int)entity.posZ +1);
+        entity.worldObj.updateLightByType(EnumSkyBlock.Block, (int)entity.posX, (int)entity.posY, (int)entity.posZ -1);
+    }
 	
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world,
@@ -121,6 +169,11 @@ public class SpaceEventHandler extends Gui implements IWorldGenerator
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event)
 	{	
+		if (event.player.getHeldItem() != null && event.player.getHeldItem().getItem() instanceof ItemPlasmaSaber)
+		{
+			addLight(event.player);
+		}
+		updateLight(event.player);
 		//TODO: add check for oxygen tanks with oxygen in them
 		if (event.player.dimension == 2 && !event.player.capabilities.isCreativeMode && 
 				(event.player.getEquipmentInSlot(4) == null || !(event.player.getEquipmentInSlot(4).getItem() instanceof ItemOxygenHelmet)
@@ -179,6 +232,11 @@ public class SpaceEventHandler extends Gui implements IWorldGenerator
 		{
 			((ExtendedPropertiesPlayer) event.player.getExtendedProperties("ExtendedPropertiesPlayer")).setFalling(false);
 		}
+		
+        if (event.player.isDead)
+        {
+        	event.player.worldObj.updateLightByType(EnumSkyBlock.Block, (int)event.player.posX, (int)event.player.posY, (int)event.player.posZ);
+        }
 	}
 	
 	/**
@@ -231,16 +289,49 @@ public class SpaceEventHandler extends Gui implements IWorldGenerator
 	 * Used to make the player hold a rifle like a drawn bow at all times
 	 */
 	@SubscribeEvent
-	public void onPlayerRenderEvent(RenderPlayerEvent.Pre event)
+	public void onPlayerRenderEventPre(RenderPlayerEvent.Pre event)
 	{
 		EntityPlayer player = (EntityPlayer) event.entity;
 		
 		if(player.getHeldItem() != null)
 		{
-			if(player.getHeldItem().getItem() instanceof ItemBlasterRifle)
+			if(player.getHeldItem().getItem() instanceof ItemBlasterRifle || player.getHeldItem().getItem() instanceof ItemRocketLauncher)
 			{
 				event.renderer.modelArmorChestplate.aimedBow = event.renderer.modelArmor.aimedBow = event.renderer.modelBipedMain.aimedBow = true;
 			}
+		}
+		
+		if (player.ridingEntity != null && player.ridingEntity instanceof EntityBasicShip)
+		{
+			Vec3 riderLookVec = player.getLookVec();
+			double riderLookXZMag = MathHelper.sqrt_double((riderLookVec.xCoord * riderLookVec.xCoord + riderLookVec.zCoord * riderLookVec.zCoord));
+			double riderLookSin = Math.abs(riderLookXZMag) > 0.0F ? riderLookVec.yCoord / riderLookXZMag : 1.0F;
+			GL11.glPushMatrix();
+			GL11.glRotatef(90.0F * (float)Math.asin(Math.abs(riderLookSin) < 0.5F ? riderLookSin : riderLookSin < 1.0F && riderLookVec.yCoord < 0 ? -0.5F : 0.5F), 1.0F, 0.0F, 0.0F);
+		}
+	}
+	
+	@SubscribeEvent
+	public void onPlayerRenderEventPost(RenderPlayerEvent.Post event)
+	{
+		EntityPlayer player = (EntityPlayer) event.entity;
+		
+		if (player.ridingEntity != null && player.ridingEntity instanceof EntityBasicShip)
+		{
+			Vec3 riderLookVec = player.getLookVec();
+			double riderLookXZMag = MathHelper.sqrt_double((riderLookVec.xCoord * riderLookVec.xCoord + riderLookVec.zCoord * riderLookVec.zCoord));
+			double riderLookSin = Math.abs(riderLookXZMag) > 0.0F ? riderLookVec.yCoord / riderLookXZMag : 1.0F;
+			GL11.glRotatef(-90.0F * (float)Math.asin(Math.abs(riderLookSin) < 0.5F ? riderLookSin : riderLookSin < 1.0F && riderLookVec.yCoord < 0 ? -0.5F : 0.5F), 1.0F, 0.0F, 0.0F);
+			GL11.glPopMatrix();
+		}
+	}
+	
+	@SubscribeEvent
+	public void onPlayerFOVUpdate(FOVUpdateEvent event)
+	{
+		if (event.entity.ridingEntity != null && event.entity.ridingEntity instanceof EntityBasicShip)
+		{
+			event.newfov = 2.0F;
 		}
 	}
 	

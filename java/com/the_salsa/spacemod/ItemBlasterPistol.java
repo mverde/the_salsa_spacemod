@@ -8,9 +8,9 @@ public class ItemBlasterPistol extends ItemGunGeneric
 	/**
 	 * max damage - 2 = ammo capacity
 	 */
-	public ItemBlasterPistol(String name, double boltSpeed, double range, float damage, int fireTicksMax, int reloadTicksMax, int ammoCapacity)
+	public ItemBlasterPistol(String name, double boltSpeed, double range, float damage, int fireTicksMax, int reloadTicksMax, int ammoCapacity, int durability)
 	{
-		super(name, boltSpeed, range, damage, fireTicksMax, reloadTicksMax, ammoCapacity);
+		super(name, boltSpeed, range, damage, fireTicksMax, reloadTicksMax, ammoCapacity, durability);
 	}
 	
 	/**

@@ -6,7 +6,6 @@ import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
-import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
 public class EntityBlasterBolt extends EntityThrowable
@@ -16,17 +15,17 @@ public class EntityBlasterBolt extends EntityThrowable
     private double range;
     private double speed;
 
-    public EntityBlasterBolt(World p_i1773_1_)
+    public EntityBlasterBolt(World world)
     {
-        super(p_i1773_1_);
+        super(world);
     }
 
     /**
      * construct EntityBlasterBolt with speed, range, damage modifiers
      */
-    public EntityBlasterBolt(World p_i1774_1_, EntityLivingBase p_i1774_2_, double speed, double range, float damage)
+    public EntityBlasterBolt(World world, EntityLivingBase shooter, double speed, double range, float damage)
     {
-        super(p_i1774_1_, p_i1774_2_);
+        super(world, shooter);
         this.motionX *= speed;
         this.motionY *= speed;
         this.motionZ *= speed;
@@ -39,39 +38,21 @@ public class EntityBlasterBolt extends EntityThrowable
         this.setThrowableHeading(this.motionX, this.motionY, this.motionZ, this.func_70182_d(), 1.0F);
     }
 
-    public EntityBlasterBolt(World p_i1775_1_, double p_i1775_2_, double p_i1775_4_, double p_i1775_6_)
+    public EntityBlasterBolt(World world, double x, double y, double z)
     {
-        super(p_i1775_1_, p_i1775_2_, p_i1775_4_, p_i1775_6_);
-    }
-    
-    /**
-     * sets the light level of the block that this entity occupies in order to make it "glow" WIP!!!!
-     */
-    private void addLight()
-    {
-    	  this.worldObj.setLightValue(EnumSkyBlock.Block, (int) this.posX, (int) this.posY, (int) this.posZ, 5);
-    	  this.worldObj.markBlockRangeForRenderUpdate((int) this.posX, (int) this.posY, (int) this.posX, 2, 2, 2);
-    	  this.worldObj.markBlockForUpdate((int) this.posX, (int) this.posY, (int) this.posZ);
-    	  this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX, (int) this.posY + 1, (int) this.posZ);
-    	  this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX, (int) this.posY - 1, (int) this.posZ);
-    	  this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX + 1, (int) this.posY, (int) this.posZ);
-    	  this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX - 1, (int) this.posY, (int) this.posZ);
-    	  this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX, (int) this.posY, (int) this.posZ + 1);
-    	  this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX, (int) this.posY, (int) this.posZ - 1);
+        super(world, x, y, z);
     }
 
     /**
      * Called when this EntityThrowable hits a block or entity.
      */
-    protected void onImpact(MovingObjectPosition p_70184_1_)
+    protected void onImpact(MovingObjectPosition position)
     {	
-    	this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX, (int) this.posY, (int) this.posZ);
-    	
-        if (p_70184_1_.entityHit != null)
+        if (position.entityHit != null)
         {  	
-            if (p_70184_1_.entityHit instanceof EntityPlayer)
+            if (position.entityHit instanceof EntityPlayer)
             {
-            	EntityPlayer player = (EntityPlayer) p_70184_1_.entityHit;
+            	EntityPlayer player = (EntityPlayer) position.entityHit;
             	
             	if (shouldPlayerDeflect(player) && player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemPlasmaSaber
             			&& player.isBlocking())
@@ -89,10 +70,10 @@ public class EntityBlasterBolt extends EntityThrowable
             	}
             }
             
-            p_70184_1_.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), damage);
+            position.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), damage);
         }
 
-        for (int i = 0; i < 8; ++i)
+        for (int i = 0; i < 3; ++i)
         {
             this.worldObj.spawnParticle("lava", this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
         }
@@ -123,19 +104,15 @@ public class EntityBlasterBolt extends EntityThrowable
      */
     public void onUpdate()
     {
-    	//if (this.isDead)
-    	//{
-    	this.worldObj.updateLightByType(EnumSkyBlock.Block, (int) this.posX, (int) this.posY, (int) this.posZ);
-    	//}
-    	if (this.getDistance(originX, originY, originZ) > this.range)
+    	super.onUpdate();
+    	
+    	if ((!this.isInWater() && this.getDistance(originX, originY, originZ) > this.range) || (this.isInWater() && this.getDistance(originX, originY, originZ) > this.range / 10))
     	{   
     		if (!this.worldObj.isRemote)
     	    {
     			this.setDead();
     	    }
     	}
-    	addLight();
-    	super.onUpdate();
     }
     
     /**

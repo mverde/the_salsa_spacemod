@@ -1,43 +1,47 @@
 package com.the_salsa.spacemod;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
-public class RenderBlasterRifle implements IItemRenderer
+public class RenderBlasterRifle extends RenderGunGeneric
 {
-	private ModelBlasterRifle model;
+	private static ModelBlasterRifle model = new ModelBlasterRifle();
 	
 	public RenderBlasterRifle()
 	{
-		model = new ModelBlasterRifle();
-	}
-	
-	@Override
-	public boolean handleRenderType(ItemStack item, ItemRenderType type)
-	{
-		return type != ItemRenderType.INVENTORY;
+		super(model);
 	}
 
 	@Override
-	public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item,
-			ItemRendererHelper helper)
+	public void renderItem(ItemRenderType type, ItemStack item, Object... data)
 	{
-		return type != ItemRenderType.INVENTORY;
-	}
-
-	@Override
-	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
 		GL11.glPushMatrix();
-		
 		GL11.glScalef(3F, 3F, 3F);
 		
 		switch (type)
 		{
 		case INVENTORY:
+			GL11.glScalef(0.333F, 0.333F, 0.333F);
+			FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+			IIcon icon = item.getIconIndex();
+			renderItem.renderIcon(0, 0, icon, 16, 16);
+			
+			String text;
+			if (item.stackTagCompound == null)
+			{
+				text = "0";
+			}
+			else
+			{
+				text = "" + item.stackTagCompound.getInteger("currentAmmo");
+			}
+			
+			fontRenderer.drawStringWithShadow(text, 1, 1, 0xFFFFFF);
 			break;
 		case EQUIPPED:
 			GL11.glTranslatef(0.025F, -0.25F, 0.025F);

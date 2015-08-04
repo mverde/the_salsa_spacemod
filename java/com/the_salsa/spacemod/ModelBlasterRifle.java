@@ -130,18 +130,17 @@ public class ModelBlasterRifle extends ModelBase
   
   public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
   {
-	  super.render(entity, f, f1, f2, f3, f4, f5);
 	  setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 	  barrel.render(f5);
 	  barrelCover.render(f5);
 	  reciever.render(f5);
 	  grip.render(f5);
 	  scopeMount1.render(f5);
-	  GL11.glEnable(GL11.GL_BLEND);
+	  //GL11.glEnable(GL11.GL_BLEND);
 	  scope.render(f5);
 	  scopeLens.render(f5);
 	  scopeLens2.render(f5);
-	  GL11.glDisable(GL11.GL_BLEND);
+	  //GL11.glDisable(GL11.GL_BLEND);
 	  stock1.render(f5);
 	  stock2.render(f5);
 	  triggerRing1.render(f5);
