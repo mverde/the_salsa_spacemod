@@ -46,21 +46,8 @@ public class RenderBasicShip extends RenderEntityGeneric
 		GL11.glScalef(2.0F, 2.0F, 2.0F);
 		GL11.glRotatef(yaw, 0.0F, 1.0F, 0.0F);
 		GL11.glRotatef(180F - entity.prevRotationPitch - (entity.rotationPitch - entity.prevRotationPitch) * pitch, 1.0F, 0.0F, 0.0F);
-		
-		if (entity.riddenByEntity != null)
-		{
-			Vec3 riderLookVec = entity.riddenByEntity.getLookVec();
-			double riderLookXZMag = MathHelper.sqrt_double((riderLookVec.xCoord * riderLookVec.xCoord + riderLookVec.zCoord * riderLookVec.zCoord));
-			double riderLookSin = Math.abs(riderLookXZMag) > 0.0F ? riderLookVec.yCoord / riderLookXZMag : 1.0F;
-			float yawDifference = Math.abs(Math.abs(entity.rotationYaw) - Math.abs(((EntityLivingBase)entity.riddenByEntity).rotationYawHead));
-			//System.out.println(((EntityBasicShip)entity).shipPitch);
-//			if (yawDifference <= 45)
-//			{
-//				//GL11.glRotatef(-90.0F * (float)Math.asin(Math.abs(riderLookSin) < 0.5F ? riderLookSin : riderLookSin < 1.0F && riderLookVec.yCoord < 0 ? -0.5F : 0.5F), 
-//						//1.0F, 0.0F, 0.0F);
-//			}
-    		//GL11.glRotatef(((EntityBasicShip)entity).shipTiltDegrees, 0.0F, 0.0F, 1.0F);
-		}
+		GL11.glTranslatef(-0.025F, 0.0F, 0.0F);
+		//MAKE COCKPIT WINDSHIELD TALLER AND WIDER AND MESS WITH PLACING THE PLAYER ON THE ENTITY IN ONUPDATE INSTEAD
 		
 		model.render(entity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 		GL11.glPopMatrix();

@@ -24,7 +24,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 public class EntityBasicShip extends Entity
-{
+{	
     /** true if no player in ship */
     private boolean isShipEmpty;
     private double speedMultiplier;
@@ -34,6 +34,7 @@ public class EntityBasicShip extends Entity
     private double shipZ;
     private double shipYaw;
     private double shipPitch;
+    private double shipRotationPitch;
     @SideOnly(Side.CLIENT)
     private double velocityX;
     @SideOnly(Side.CLIENT)
@@ -49,8 +50,9 @@ public class EntityBasicShip extends Entity
         this.isShipEmpty = true;
         this.speedMultiplier = 0.07D;
         this.preventEntitySpawning = true;
-        this.setSize(1.5F, 0.6F);
+        this.setSize(5.0F, 1.5F);
         this.yOffset = this.height / 2.0F;
+        this.shipRotationPitch = 0.0D;
     }
 
     /**
@@ -104,6 +106,7 @@ public class EntityBasicShip extends Entity
         this.prevPosX = x;
         this.prevPosY = y;
         this.prevPosZ = z;
+        this.shipRotationPitch = 0.0D;
     }
 
     /**
@@ -111,7 +114,7 @@ public class EntityBasicShip extends Entity
      */
     public double getMountedYOffset()
     {
-        return (double)this.height * 0.0D - 0.30000001192092896D + 1.5D;
+        return (double)this.height * 0.0D - 0.30000001192092896D + 1D;
     }
 
     /**
@@ -290,13 +293,6 @@ public class EntityBasicShip extends Entity
                 d11 = this.posZ + this.motionZ;
                 this.setPosition(d2, d4, d11);
 
-//                if (this.onGround)
-//                {
-//                    this.motionX *= 0.5D;
-//                    this.motionY *= 0.5D;
-//                    this.motionZ *= 0.5D;
-//                }
-
                 this.motionX *= 0.9900000095367432D;
                 this.motionY *= 0.949999988079071D;
                 this.motionZ *= 0.9900000095367432D;
@@ -318,14 +314,6 @@ public class EntityBasicShip extends Entity
 
                 this.motionY += 0.007000000216066837D;
             }
-
-//            if (this.riddenByEntity != null && this.riddenByEntity instanceof EntityLivingBase)
-//            {
-//                EntityLivingBase entitylivingbase = (EntityLivingBase)this.riddenByEntity;
-//                float f = this.riddenByEntity.rotationYaw + -entitylivingbase.moveStrafing * 90.0F;
-//                this.motionX += -Math.sin((double)(f * (float)Math.PI / 180.0F)) * this.speedMultiplier * (double)entitylivingbase.moveForward * 0.05000000074505806D;
-//                this.motionZ += Math.cos((double)(f * (float)Math.PI / 180.0F)) * this.speedMultiplier * (double)entitylivingbase.moveForward * 0.05000000074505806D;
-//            }
             
             if (this.riddenByEntity != null && this.riddenByEntity instanceof EntityLivingBase)
             {
@@ -333,11 +321,18 @@ public class EntityBasicShip extends Entity
             	
             	if (rider.moveForward > 0)
             	{
-            		this.speedMultiplier += 0.02F;
-            		
-            		if (this.speedMultiplier > 0.75F)
+            		if (this.posY < this.worldObj.getHeightValue(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posZ)) + 4)
             		{
-            			this.speedMultiplier = 0.75F;
+            			this.setPosition(this.posX, this.posY + 0.2D, this.posZ);
+            		}
+            		else
+            		{
+            			this.speedMultiplier += 0.02F;
+            		
+            			if (this.speedMultiplier > 0.75F)
+            			{
+            				this.speedMultiplier = 0.75F;
+            			}
             		}
             	}
             	else if (rider.moveForward < 0)
@@ -349,115 +344,169 @@ public class EntityBasicShip extends Entity
             			this.speedMultiplier = 0F;
             		}
             	}
+            	
+            	boolean flag = true;
+    			Vec3 riderLookVec = rider.getLookVec();
     			
-    			float riderYawAdjusted = rider.rotationYawHead >= 0 ? rider.rotationYawHead : 360F + rider.rotationYawHead;
-    			float shipYawAdjusted = 360F - (this.rotationYaw >= 0 ? this.rotationYaw : 360F + this.rotationYaw);
-    			float riderViewEdgeLeft = riderYawAdjusted - 80F >= 0 ? riderYawAdjusted - 80F : 360 + riderYawAdjusted - 80F;
-    			float riderViewEdgeRight = riderYawAdjusted + 80F < 360 ? riderYawAdjusted + 80F : riderYawAdjusted + 80F - 360F;
-    			float shipViewEdgeLeft = shipYawAdjusted - 80F >= 0 ? shipYawAdjusted - 80F : 360 + shipYawAdjusted - 80F;
-    			float shipViewEdgeRight = shipYawAdjusted + 80F < 360 ? shipYawAdjusted + 80F : shipYawAdjusted + 80F - 360F;
-            	
-            	//Somewhat complicated/nested calculations incoming
-            	//These insure that the ship rotates with the rider's head correctly 
-            	//and only if the rider is looking in the 180 degree arc on the front side of the ship
-            	
-            	if (riderYawAdjusted >= 0 && riderYawAdjusted < 90) //first quadrant
+            	if (this.speedMultiplier > 0)
             	{
-                	if (shipYawAdjusted >= 0 && shipYawAdjusted < 90)
-                	{ 		
-                		this.rotationYaw += riderYawAdjusted > shipYawAdjusted ? -2.0F : 2.0F;
-                	}
-                	else if (shipYawAdjusted >= 90 && shipYawAdjusted < 180 && shipViewEdgeLeft <= riderViewEdgeRight)
+        			float riderYawAdjusted = rider.rotationYawHead >= 0 ? rider.rotationYawHead : 360F + rider.rotationYawHead;
+        			float shipYawAdjusted = 360F - (this.rotationYaw >= 0 ? this.rotationYaw : 360F + this.rotationYaw);
+        			float riderViewEdgeLeft = riderYawAdjusted - 80F >= 0 ? riderYawAdjusted - 80F : 360 + riderYawAdjusted - 80F;
+        			float riderViewEdgeRight = riderYawAdjusted + 80F < 360 ? riderYawAdjusted + 80F : riderYawAdjusted + 80F - 360F;
+        			float shipViewEdgeLeft = shipYawAdjusted - 80F >= 0 ? shipYawAdjusted - 80F : 360 + shipYawAdjusted - 80F;
+        			float shipViewEdgeRight = shipYawAdjusted + 80F < 360 ? shipYawAdjusted + 80F : shipYawAdjusted + 80F - 360F;
+                	
+                	//Somewhat complicated/nested calculations incoming
+                	//These insure that the ship rotates with the rider's head correctly 
+                	//and only if the rider is looking in the 180 degree arc on the front side of the ship
+                	
+                	if (riderYawAdjusted >= 0 && riderYawAdjusted < 90) //first quadrant
                 	{
-                		this.rotationYaw += 2.0F;
+                    	if (shipYawAdjusted >= 0 && shipYawAdjusted < 90)
+                    	{ 		
+                    		this.rotationYaw += riderYawAdjusted > shipYawAdjusted ? -2.0F : 2.0F;
+                    	}
+                    	else if (shipYawAdjusted >= 90 && shipYawAdjusted < 180 && shipViewEdgeLeft <= riderViewEdgeRight)
+                    	{
+                    		this.rotationYaw += 2.0F;
+                    	}
+                    	else if (shipYawAdjusted >= 180 && shipYawAdjusted < 270)
+                    	{
+                    		flag = false;
+                    	}
+                    	else if (shipYawAdjusted >= 270 && shipYawAdjusted <= 360 && riderViewEdgeLeft <= 180 ? shipViewEdgeRight >= riderViewEdgeLeft : shipViewEdgeRight <= riderViewEdgeLeft)
+                    	{
+                    		this.rotationYaw -= 2.0F;
+                    	}
                 	}
-                	else if (shipYawAdjusted >= 270 && shipYawAdjusted <= 360 && riderViewEdgeLeft <= 180 ? shipViewEdgeRight >= riderViewEdgeLeft : shipViewEdgeRight <= riderViewEdgeLeft)
+                	else if (riderYawAdjusted >= 90 && riderYawAdjusted < 180) //second quadrant
                 	{
-                		this.rotationYaw -= 2.0F;
+                    	if (shipYawAdjusted >= 0 && shipYawAdjusted < 90 && shipViewEdgeRight >= riderViewEdgeLeft)
+                    	{
+                    		this.rotationYaw -= 2.0F;
+                    	}
+                    	else if (shipYawAdjusted >= 90 && shipYawAdjusted < 180)
+                    	{
+                    		this.rotationYaw += riderYawAdjusted > shipYawAdjusted ? -2.0F : 2.0F;
+                    	}
+                    	else if (shipYawAdjusted >= 180 && shipYawAdjusted < 270 && shipViewEdgeLeft <= riderViewEdgeRight)
+                    	{
+                    		this.rotationYaw += 2.0F;
+                    	}
+                    	else if (shipYawAdjusted >= 270 && shipYawAdjusted <= 360)
+                    	{
+                    		flag = false;
+                    	}
+                	}
+                	else if (riderYawAdjusted >= 180 && riderYawAdjusted < 270) //third quadrant
+                	{
+                    	if (shipYawAdjusted >= 0 && shipYawAdjusted < 90)
+                    	{
+                    		flag = false;
+                    	}
+                    	else if (shipYawAdjusted >= 90 && shipYawAdjusted < 180 && shipViewEdgeRight >= riderViewEdgeLeft)
+                    	{
+                    		this.rotationYaw -= 2.0F;
+                    	}
+                    	else if (shipYawAdjusted >= 180 && shipYawAdjusted < 270)
+                    	{
+                    		this.rotationYaw += riderYawAdjusted > shipYawAdjusted ? -2.0F : 2.0F;
+                    	}
+                    	else if (shipYawAdjusted >= 270 && shipYawAdjusted <= 360 && shipViewEdgeLeft <= riderViewEdgeRight)
+                    	{
+                    		this.rotationYaw += 2.0F;
+                    	}
+                	}
+                	else if (riderYawAdjusted >= 270 && riderYawAdjusted <= 360) //fourth quadrant
+                	{
+                    	if (shipYawAdjusted >= 0 && shipYawAdjusted < 90 && (riderViewEdgeRight >= 180 ? shipViewEdgeLeft >= 180 && shipViewEdgeLeft <= riderViewEdgeRight : 
+                    		shipViewEdgeLeft >= 180 ? shipViewEdgeLeft >= riderViewEdgeRight : shipViewEdgeLeft <= riderViewEdgeRight))
+                    	{
+                    		this.rotationYaw += 2.0F;
+                    	}
+                    	else if (shipYawAdjusted >= 90 && shipYawAdjusted < 180)
+                    	{
+                    		flag = false;
+                    	}
+                    	else if (shipYawAdjusted >= 180 && shipYawAdjusted < 270 && shipViewEdgeRight >= riderViewEdgeLeft)
+                    	{
+                    		this.rotationYaw -= 2.0F;
+                    	}
+                    	else if (shipYawAdjusted >= 270 && shipYawAdjusted <= 360)
+                    	{
+                    		this.rotationYaw += riderYawAdjusted > shipYawAdjusted ? -2.0F : 2.0F;
+                    	}
                 	}
                 	
-                	if (this.rotationYaw == 2 && this.prevRotationYaw == 2)
+                	if (flag)
                 	{
-                		this.rotationYaw = 360F;
+                		if (this.shipRotationPitch < riderLookVec.yCoord)
+                		{
+                			this.shipRotationPitch = this.shipRotationPitch + 0.05F <= riderLookVec.yCoord ? this.shipRotationPitch + 0.05F : (float)riderLookVec.yCoord;
+                		}
+                		else if (this.shipRotationPitch > riderLookVec.yCoord)
+                		{
+                			this.shipRotationPitch = this.shipRotationPitch - 0.05F >= riderLookVec.yCoord ? this.shipRotationPitch - 0.05F : (float)riderLookVec.yCoord;
+                		}
                 	}
             	}
-            	else if (riderYawAdjusted >= 90 && riderYawAdjusted < 180) //second quadrant
+            	else
             	{
-                	if (shipYawAdjusted >= 0 && shipYawAdjusted < 90 && shipViewEdgeRight >= riderViewEdgeLeft)
-                	{
-                		this.rotationYaw -= 2.0F;
-                	}
-                	else if (shipYawAdjusted >= 90 && shipYawAdjusted < 180)
-                	{
-                		this.rotationYaw += riderYawAdjusted > shipYawAdjusted ? -2.0F : 2.0F;
-                	}
-                	else if (shipYawAdjusted >= 180 && shipYawAdjusted < 270 && shipViewEdgeLeft <= riderViewEdgeRight)
-                	{
-                		this.rotationYaw += 2.0F;
-                	}
-            	}
-            	else if (riderYawAdjusted >= 180 && riderYawAdjusted < 270) //third quadrant
-            	{
-            		if (shipYawAdjusted >= 90 && shipYawAdjusted < 180 && shipViewEdgeRight >= riderViewEdgeLeft)
-                	{
-                		this.rotationYaw -= 2.0F;
-                	}
-                	else if (shipYawAdjusted >= 180 && shipYawAdjusted < 270)
-                	{
-                		this.rotationYaw += riderYawAdjusted > shipYawAdjusted ? -2.0F : 2.0F;
-                	}
-                	else if (shipYawAdjusted >= 270 && shipYawAdjusted <= 360 && shipViewEdgeLeft <= riderViewEdgeRight)
-                	{
-                		this.rotationYaw += 2.0F;
-                	}
-            	}
-            	else if (riderYawAdjusted >= 270 && riderYawAdjusted <= 360) //fourth quadrant
-            	{
-                	if (shipYawAdjusted >= 0 && shipYawAdjusted < 90 && (riderViewEdgeRight >= 180 ? shipViewEdgeLeft >= 180 && shipViewEdgeLeft <= riderViewEdgeRight : 
-                		shipViewEdgeLeft >= 180 ? shipViewEdgeLeft >= riderViewEdgeRight : shipViewEdgeLeft <= riderViewEdgeRight))
-                	{
-                		this.rotationYaw += 2.0F;
-                	}
-                	else if (shipYawAdjusted >= 180 && shipYawAdjusted < 270 && shipViewEdgeRight >= riderViewEdgeLeft)
-                	{
-                		this.rotationYaw -= 2.0F;
-                	}
-                	else if (shipYawAdjusted >= 270 && shipYawAdjusted <= 360)
-                	{
-                		this.rotationYaw += riderYawAdjusted > shipYawAdjusted ? -2.0F : 2.0F;
-                	}
+            		if (this.shipRotationPitch < 0)
+            		{
+            			this.shipRotationPitch = this.shipRotationPitch + 0.1F <= 0 ? this.shipRotationPitch + 0.1F : 0.0F;
+            		}
+            		else if (this.shipRotationPitch > 0)
+            		{
+            			this.shipRotationPitch = this.shipRotationPitch - 0.1F >= 0 ? this.shipRotationPitch - 0.1F : 0.0F;
+            		}
             	}
             	
-    			Vec3 riderLookVec = rider.getLookVec();
-            	
-            	this.shipPitch = (float) riderLookVec.yCoord;
-            	System.out.println(this.shipPitch);
-            	
+            	double riderLookXZMag = Math.sqrt(riderLookVec.xCoord * riderLookVec.xCoord + riderLookVec.zCoord * riderLookVec.zCoord);
             	double rotationYawRad = (this.rotationYaw / 360.0D) * (2 * Math.PI);
-            	this.motionX = Math.sin(rotationYawRad) * this.speedMultiplier;
-            	this.motionZ = Math.cos(rotationYawRad)  * this.speedMultiplier;
-            	this.prevMotionY = this.motionY;
-        		this.motionY = riderLookVec.yCoord * this.speedMultiplier;
+            	this.motionX = Math.sin(rotationYawRad) * this.speedMultiplier * riderLookXZMag;
+            	this.motionZ = Math.cos(rotationYawRad)  * this.speedMultiplier * riderLookXZMag;
+            	this.motionY = this.shipRotationPitch * this.speedMultiplier;
         		
-        		if (motionY == 0 && !this.onGround && rider.moveForward < 0) //ALMOST STILL CAN GO THROUGH GROUND
+    			if (rider.moveForward < 0 && this.speedMultiplier <= 0 && Math.abs(this.shipRotationPitch) == 0 && Math.abs(riderLookVec.yCoord) < 0.3
+    					&& this.posY > this.worldObj.getHeightValue(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posZ)) + 1)
         		{
-        			this.setPosition(this.posX, this.posY - 0.2D, this.posZ);
+    				this.shipRotationPitch = 0.0D;
+        			this.setPositionAndRotation(this.posX, this.posY - 0.2D, this.posZ, (float) this.rotationYaw, 0.0F);
+        		}
+    			else if (this.isCollided || this.posY <= this.worldObj.getHeightValue(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posZ)) + 1)
+        		{
+        			this.motionX *= 0.25F;
+        			this.motionZ *= 0.25F;
+        			
+        			if (this.speedMultiplier >= 0.55 && !this.worldObj.isRemote)
+        			{
+        				this.setDead();
+        				this.func_145778_a(SpaceMod.basicShip, 1, 0.0F);
+        			}
         		}
             }
             else
             {
-            	this.speedMultiplier = 0D;
-                this.motionX += this.motionX < 0 ? 0.0005D : -0.0005D;
-            	this.motionZ += this.motionZ < 0 ? 0.0005D : -0.0005D;
+            	this.speedMultiplier = 0.0D;
             	
-            	if (Math.abs(this.motionX) < 0.001D)
+            	this.motionX *= 0.95D;
+            	this.motionZ *= 0.95D;
+            	
+            	if (Math.abs(this.motionX) < 0.01)
             	{
-            		this.motionX = 0D;
+            		this.motionX = 0.0D;
             	}
             	
-            	if (Math.abs(this.motionZ) < 0.001D)
+            	if (Math.abs(this.motionZ) < 0.01)
             	{
-            		this.motionZ = 0D;
+            		this.motionZ = 0.0D;
+            	}
+            	
+            	if (this.dimension == 2)
+            	{
+            		this.motionY = 0.0D;
             	}
             }
 
@@ -486,63 +535,8 @@ public class EntityBasicShip extends Entity
                 }
             }
 
-//            if (this.onGround)
-//            {
-//                this.motionX *= 0.5D;
-//                this.motionY *= 0.5D;
-//                this.motionZ *= 0.5D;
-//            }
-
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
-
-//            if (this.isCollidedHorizontally && d10 > 0.2D)
-//            {
-//                if (!this.worldObj.isRemote && !this.isDead)
-//                {
-//                    this.setDead();
-//
-//                    for (l = 0; l < 3; ++l)
-//                    {
-//                        this.func_145778_a(Item.getItemFromBlock(Blocks.planks), 1, 0.0F);
-//                    }
-//
-//                    for (l = 0; l < 2; ++l)
-//                    {
-//                        this.func_145778_a(Items.stick, 1, 0.0F);
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                this.motionX *= 0.9900000095367432D;
-//                this.motionY *= 0.949999988079071D;
-//                this.motionZ *= 0.9900000095367432D;
-//            }
-
-            //this.rotationPitch = 0.0F;
-            d4 = (double)this.rotationYaw;
-            d11 = this.prevPosX - this.posX;
-            d12 = this.prevPosZ - this.posZ;
-
-            if (d11 * d11 + d12 * d12 > 0.001D)
-            {
-                d4 = (double)((float)(Math.atan2(d12, d11) * 180.0D / Math.PI));
-            }
-
-            double d7 = MathHelper.wrapAngleTo180_double(d4 - (double)this.rotationYaw);
-
-            if (d7 > 20.0D)
-            {
-                d7 = 20.0D;
-            }
-
-            if (d7 < -20.0D)
-            {
-                d7 = -20.0D;
-            }
-
-//            this.rotationYaw = (float)((double)this.rotationYaw + d7);
-            this.setRotation(this.rotationYaw, this.rotationPitch);
+            this.setRotation(this.rotationYaw, (float)this.shipRotationPitch * 90F);
 
             if (!this.worldObj.isRemote)
             {
@@ -627,18 +621,9 @@ public class EntityBasicShip extends Entity
 
         if (onGround)
         {
-            if (this.fallDistance > 3.0F)
-            {
-                this.fall(this.fallDistance);
-
-                if (!this.worldObj.isRemote && !this.isDead)
-                {
-                    this.setDead();
-                    int l;
-                }
-
-                this.fallDistance = 0.0F;
-            }
+            this.fallDistance = 0.0F;
+            this.motionY = 0.0F;
+            this.moveEntity(this.motionX, this.motionY, this.motionZ);
         }
         else if (this.worldObj.getBlock(i, j - 1, k).getMaterial() != Material.water && distanceFallen < 0.0D)
         {

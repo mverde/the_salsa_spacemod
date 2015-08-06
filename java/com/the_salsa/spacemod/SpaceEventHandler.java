@@ -245,6 +245,11 @@ public class SpaceEventHandler extends Gui implements IWorldGenerator
 	@SubscribeEvent
 	public void onEntityTick(EntityTick event)
 	{
+		if (event.entity instanceof EntityBasicShip && (event.entity.riddenByEntity != null || (event.entity.motionX == 0 && event.entity.motionY == 0 && event.entity.motionZ == 0)))
+		{
+			return;
+		}
+		
 		if (event.entity.dimension == 2 &&
 				(event.entity.motionY < -0.0784000015258789D || event.entity.motionY > -0.0784000015258789D))
 		{	
