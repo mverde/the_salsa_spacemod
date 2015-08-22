@@ -6,6 +6,7 @@
    "deflect": {"category": "master","sounds": [{"name": "deflect","stream": false}]},
    "blaster.pistol": {"category": "master","sounds": [{"name": "blaster.pistol","stream": false}]},
    "blaster.rifle": {"category": "master","sounds": [{"name": "blaster.rifle","stream": false}]},
+   "blaster.ship": {"category": "master","sounds": [{"name": "blaster.ship","stream": false}]},
    "reload": {"category": "master","sounds": [{"name": "reload","stream": false}]},
    "rocket.shoot": {"category": "master","sounds": [{"name": "rocketshoot","stream": false}]}
 }

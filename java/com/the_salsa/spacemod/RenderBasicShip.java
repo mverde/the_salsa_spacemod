@@ -46,8 +46,7 @@ public class RenderBasicShip extends RenderEntityGeneric
 		GL11.glScalef(2.0F, 2.0F, 2.0F);
 		GL11.glRotatef(yaw, 0.0F, 1.0F, 0.0F);
 		GL11.glRotatef(180F - entity.prevRotationPitch - (entity.rotationPitch - entity.prevRotationPitch) * pitch, 1.0F, 0.0F, 0.0F);
-		GL11.glTranslatef(-0.025F, 0.0F, 0.0F);
-		//MAKE COCKPIT WINDSHIELD TALLER AND WIDER AND MESS WITH PLACING THE PLAYER ON THE ENTITY IN ONUPDATE INSTEAD
+		GL11.glRotatef(180f, 0.0F, 1.0F, 0.0F);
 		
 		model.render(entity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 		GL11.glPopMatrix();

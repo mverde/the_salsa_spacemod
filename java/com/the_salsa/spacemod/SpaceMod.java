@@ -140,7 +140,8 @@ public class SpaceMod
     	EntityRegistry.registerModEntity(EntityBlasterBolt.class, "blasterbolt", 0, this, 80, 3, true);
     	EntityRegistry.registerModEntity(EntityTrooperBase.class, "entitytrooper", 1, this, 80, 3, true);
     	EntityRegistry.registerModEntity(EntityPlasmaRocket.class, "plasmarocket", 2, this, 80, 3, true);
-    	EntityRegistry.registerModEntity(EntityBasicShip.class, "basicship", 3, this, 80, 3, true);
+    	EntityRegistry.registerModEntity(EntityShipBlasterBolt.class, "shipblasterbolt", 3, this, 80, 3, true);
+    	EntityRegistry.registerModEntity(EntityBasicShip.class, "basicship", 4, this, 80, 3, true);
     	registerEntityEgg(EntityTrooperBase.class, 0x000000, 0xffffff);
 		EntityRegistry.addSpawn(EntityTrooperBase.class, 3, 1, 3, EnumCreatureType.ambient, spacebiome);
     	

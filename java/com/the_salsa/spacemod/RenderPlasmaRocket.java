@@ -37,6 +37,6 @@ public class RenderPlasmaRocket extends RenderEntityGeneric
     @Override
     public void doRender(Entity entity, double x, double y, double z, float yaw, float pitch)
     {
-        this.doRender((EntityPlasmaRocket) entity, x, y, z, yaw, pitch);
+        this.doRender((EntityPlasmaRocket) entity, x, y, z, yaw, pitch, 1F);
     }
 }

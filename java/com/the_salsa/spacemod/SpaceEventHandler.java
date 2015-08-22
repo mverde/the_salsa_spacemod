@@ -155,11 +155,18 @@ public class SpaceEventHandler extends Gui implements IWorldGenerator
 	    // Register extended entity properties
 		if (!(event.entity instanceof EntityBlasterBolt || event.entity instanceof EntityPlayer))
 		{
-		    event.entity.registerExtendedProperties("ExtendedPropertiesGravity", new ExtendedPropertiesGravity());
+		    event.entity.registerExtendedProperties(ExtendedPropertiesGravity.EX_PROP_NAME, new ExtendedPropertiesGravity());
 		}
 		else if (event.entity instanceof EntityPlayer)
 		{
-			event.entity.registerExtendedProperties("ExtendedPropertiesPlayer", new ExtendedPropertiesPlayer());
+			event.entity.registerExtendedProperties(ExtendedPropertiesPlayer.EX_PROP_NAME, new ExtendedPropertiesPlayer());
+		}
+		
+		if (event.entity instanceof EntityBasicShip)
+		{
+			event.entity.registerExtendedProperties(ExtendedPropertiesShip.EX_PROP_NAME, new ExtendedPropertiesShip());
+			// ((ExtendedPropertiesShip)event.entity.getExtendedProperties(ExtendedPropertiesShip.EX_PROP_NAME)).setFireTicksMax(((EntityBasicShip)event.entity).getFireTicksMax());
+			((ExtendedPropertiesShip)event.entity.getExtendedProperties(ExtendedPropertiesShip.EX_PROP_NAME)).setFireTicksMax(5);
 		}
 	}
 	
@@ -306,29 +313,29 @@ public class SpaceEventHandler extends Gui implements IWorldGenerator
 			}
 		}
 		
-		if (player.ridingEntity != null && player.ridingEntity instanceof EntityBasicShip)
-		{
-			Vec3 riderLookVec = player.getLookVec();
-			double riderLookXZMag = MathHelper.sqrt_double((riderLookVec.xCoord * riderLookVec.xCoord + riderLookVec.zCoord * riderLookVec.zCoord));
-			double riderLookSin = Math.abs(riderLookXZMag) > 0.0F ? riderLookVec.yCoord / riderLookXZMag : 1.0F;
-			GL11.glPushMatrix();
-			GL11.glRotatef(90.0F * (float)Math.asin(Math.abs(riderLookSin) < 0.5F ? riderLookSin : riderLookSin < 1.0F && riderLookVec.yCoord < 0 ? -0.5F : 0.5F), 1.0F, 0.0F, 0.0F);
-		}
+//		if (player.ridingEntity != null && player.ridingEntity instanceof EntityBasicShip)
+//		{
+//			Vec3 riderLookVec = player.getLookVec();
+//			double riderLookXZMag = MathHelper.sqrt_double((riderLookVec.xCoord * riderLookVec.xCoord + riderLookVec.zCoord * riderLookVec.zCoord));
+//			double riderLookSin = Math.abs(riderLookXZMag) > 0.0F ? riderLookVec.yCoord / riderLookXZMag : 1.0F;
+//			GL11.glPushMatrix();
+//			GL11.glRotatef(90.0F * (float)Math.asin(Math.abs(riderLookSin) < 0.5F ? riderLookSin : riderLookSin < 1.0F && riderLookVec.yCoord < 0 ? -0.5F : 0.5F), 1.0F, 0.0F, 0.0F);
+//		}
 	}
 	
 	@SubscribeEvent
 	public void onPlayerRenderEventPost(RenderPlayerEvent.Post event)
 	{
-		EntityPlayer player = (EntityPlayer) event.entity;
-		
-		if (player.ridingEntity != null && player.ridingEntity instanceof EntityBasicShip)
-		{
-			Vec3 riderLookVec = player.getLookVec();
-			double riderLookXZMag = MathHelper.sqrt_double((riderLookVec.xCoord * riderLookVec.xCoord + riderLookVec.zCoord * riderLookVec.zCoord));
-			double riderLookSin = Math.abs(riderLookXZMag) > 0.0F ? riderLookVec.yCoord / riderLookXZMag : 1.0F;
-			GL11.glRotatef(-90.0F * (float)Math.asin(Math.abs(riderLookSin) < 0.5F ? riderLookSin : riderLookSin < 1.0F && riderLookVec.yCoord < 0 ? -0.5F : 0.5F), 1.0F, 0.0F, 0.0F);
-			GL11.glPopMatrix();
-		}
+//		EntityPlayer player = (EntityPlayer) event.entity;
+//		
+//		if (player.ridingEntity != null && player.ridingEntity instanceof EntityBasicShip)
+//		{
+//			Vec3 riderLookVec = player.getLookVec();
+//			double riderLookXZMag = MathHelper.sqrt_double((riderLookVec.xCoord * riderLookVec.xCoord + riderLookVec.zCoord * riderLookVec.zCoord));
+//			double riderLookSin = Math.abs(riderLookXZMag) > 0.0F ? riderLookVec.yCoord / riderLookXZMag : 1.0F;
+//			GL11.glRotatef(-90.0F * (float)Math.asin(Math.abs(riderLookSin) < 0.5F ? riderLookSin : riderLookSin < 1.0F && riderLookVec.yCoord < 0 ? -0.5F : 0.5F), 1.0F, 0.0F, 0.0F);
+//			GL11.glPopMatrix();
+//		}
 	}
 	
 	@SubscribeEvent

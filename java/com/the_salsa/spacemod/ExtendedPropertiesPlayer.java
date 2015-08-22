@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 public class ExtendedPropertiesPlayer extends ExtendedPropertiesGravity
 {	
 	/**
-	 * Like ExtendedPropertiesGravity but with more properties for the player, such as custom inventory, oxygen supply, etc.
+	 * Like ExtendedPropertiesGravity but with more properties for the player, such as oxygen supply, etc.
 	 */
 	public static final String EX_PROP_NAME = "ExtendedPropertiesPlayer";
 	//public final InventoryOxygenTanks inventory = new InventoryOxygenTanks();
@@ -111,7 +111,6 @@ public class ExtendedPropertiesPlayer extends ExtendedPropertiesGravity
 	{
 		if (!player.worldObj.isRemote)
 		{
-			//System.out.println("[EXTENDED PROPS] attempting to send oxygen packet to client...");
 			OxygenPacket packet = new OxygenPacket("" + this.maxOxygen + this.currentOxygen);
 			SpaceMod.wrapper.sendTo(packet, (EntityPlayerMP) player);
 		}

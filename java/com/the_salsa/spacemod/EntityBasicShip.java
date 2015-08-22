@@ -5,6 +5,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 import java.util.List;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.block.Block;
@@ -42,7 +43,7 @@ public class EntityBasicShip extends Entity
     @SideOnly(Side.CLIENT)
     private double velocityZ;
     
-    private double prevMotionY;
+    private int fireTicksMax = 5;
 
     public EntityBasicShip(World world)
     {
@@ -50,7 +51,7 @@ public class EntityBasicShip extends Entity
         this.isShipEmpty = true;
         this.speedMultiplier = 0.07D;
         this.preventEntitySpawning = true;
-        this.setSize(5.0F, 1.5F);
+        this.setSize(1.5F, 0.6F);
         this.yOffset = this.height / 2.0F;
         this.shipRotationPitch = 0.0D;
     }
@@ -69,6 +70,7 @@ public class EntityBasicShip extends Entity
         this.dataWatcher.addObject(17, new Integer(0));
         this.dataWatcher.addObject(18, new Integer(1));
         this.dataWatcher.addObject(19, new Float(0.0F));
+        this.dataWatcher.addObject(20, new Integer(this.fireTicksMax));
     }
 
     /**
@@ -114,7 +116,7 @@ public class EntityBasicShip extends Entity
      */
     public double getMountedYOffset()
     {
-        return (double)this.height * 0.0D - 0.30000001192092896D + 1D;
+        return (double)this.height * 0.0D - 0.30000001192092896D + 0.8D;
     }
 
     /**
@@ -229,6 +231,13 @@ public class EntityBasicShip extends Entity
     public void onUpdate()
     {
         super.onUpdate();
+        
+    	ExtendedPropertiesShip properties = (ExtendedPropertiesShip) this.getExtendedProperties(ExtendedPropertiesShip.EX_PROP_NAME);
+        
+    	if (properties != null)
+    	{
+    		properties.updateFireTimer(false);
+    	}
 
         if (this.getTimeSinceHit() > 0)
         {
@@ -349,7 +358,7 @@ public class EntityBasicShip extends Entity
     			Vec3 riderLookVec = rider.getLookVec();
     			
             	if (this.speedMultiplier > 0)
-            	{
+            	{	
         			float riderYawAdjusted = rider.rotationYawHead >= 0 ? rider.rotationYawHead : 360F + rider.rotationYawHead;
         			float shipYawAdjusted = 360F - (this.rotationYaw >= 0 ? this.rotationYaw : 360F + this.rotationYaw);
         			float riderViewEdgeLeft = riderYawAdjusted - 80F >= 0 ? riderYawAdjusted - 80F : 360 + riderYawAdjusted - 80F;
@@ -443,11 +452,11 @@ public class EntityBasicShip extends Entity
                 	{
                 		if (this.shipRotationPitch < riderLookVec.yCoord)
                 		{
-                			this.shipRotationPitch = this.shipRotationPitch + 0.05F <= riderLookVec.yCoord ? this.shipRotationPitch + 0.05F : (float)riderLookVec.yCoord;
+                			this.shipRotationPitch = this.shipRotationPitch + 0.025F <= riderLookVec.yCoord ? this.shipRotationPitch + 0.025F : (float)riderLookVec.yCoord;
                 		}
                 		else if (this.shipRotationPitch > riderLookVec.yCoord)
                 		{
-                			this.shipRotationPitch = this.shipRotationPitch - 0.05F >= riderLookVec.yCoord ? this.shipRotationPitch - 0.05F : (float)riderLookVec.yCoord;
+                			this.shipRotationPitch = this.shipRotationPitch - 0.025F >= riderLookVec.yCoord ? this.shipRotationPitch - 0.025F : (float)riderLookVec.yCoord;
                 		}
                 	}
             	}
@@ -455,11 +464,11 @@ public class EntityBasicShip extends Entity
             	{
             		if (this.shipRotationPitch < 0)
             		{
-            			this.shipRotationPitch = this.shipRotationPitch + 0.1F <= 0 ? this.shipRotationPitch + 0.1F : 0.0F;
+            			this.shipRotationPitch = this.shipRotationPitch + 0.025F <= 0 ? this.shipRotationPitch + 0.025F : 0.0F;
             		}
             		else if (this.shipRotationPitch > 0)
             		{
-            			this.shipRotationPitch = this.shipRotationPitch - 0.1F >= 0 ? this.shipRotationPitch - 0.1F : 0.0F;
+            			this.shipRotationPitch = this.shipRotationPitch - 0.025F >= 0 ? this.shipRotationPitch - 0.025F : 0.0F;
             		}
             	}
             	
@@ -468,6 +477,12 @@ public class EntityBasicShip extends Entity
             	this.motionX = Math.sin(rotationYawRad) * this.speedMultiplier * riderLookXZMag;
             	this.motionZ = Math.cos(rotationYawRad)  * this.speedMultiplier * riderLookXZMag;
             	this.motionY = this.shipRotationPitch * this.speedMultiplier;
+            	
+        		if (Mouse.isButtonDown(1) && this.speedMultiplier > 0 && properties != null && properties.canShipFire())
+        		{
+        			fire(rider, rotationYawRad);
+        			properties.updateFireTimer(true);
+        		}
         		
     			if (rider.moveForward < 0 && this.speedMultiplier <= 0 && Math.abs(this.shipRotationPitch) == 0 && Math.abs(riderLookVec.yCoord) < 0.3
     					&& this.posY > this.worldObj.getHeightValue(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posZ)) + 1)
@@ -562,14 +577,38 @@ public class EntityBasicShip extends Entity
             }
         }
     }
+    
+    public void fire(EntityLivingBase rider, double rotationYawRad)
+    {
+		EntityShipBlasterBolt bolt = new EntityShipBlasterBolt(this.worldObj, rider, 0.5D, 40.0D, 10.0F);
+		double sqrtXYZ = Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
+		double unitVecX = this.motionX / sqrtXYZ;
+		double unitVecZ = this.motionZ / sqrtXYZ;
+		double unitVecY = this.motionY / sqrtXYZ;
+		double unitVecXZMag = Math.sqrt(unitVecX * unitVecX + unitVecZ * unitVecZ);
+		
+		bolt.setPositionAndRotation(this.posX + Math.sin(rotationYawRad) * unitVecXZMag * 5, this.posY + unitVecY * 5, this.posZ + Math.cos(rotationYawRad) * unitVecXZMag * 5, this.rotationYaw, this.rotationPitch);
+		bolt.motionX = unitVecX * 4;
+		bolt.motionY = unitVecY * 4;
+		bolt.motionZ = unitVecZ * 4;
+
+        if (!this.worldObj.isRemote)
+        {
+            this.worldObj.playSoundAtEntity(this, SpaceMod.MODID + ":" + "blaster.ship", 0.75F, 1.0F);
+            this.worldObj.spawnEntityInWorld(bolt);
+        }
+    }
+    
+    public int getFireTicksMax()
+    {
+    	return this.dataWatcher.getWatchableObjectInt(20);
+    }
 
     public void updateRiderPosition()
     {
         if (this.riddenByEntity != null)
         {
-            double d0 = Math.cos((double)this.rotationYaw * Math.PI / 180.0D) * 0.4D;
-            double d1 = Math.sin((double)this.rotationYaw * Math.PI / 180.0D) * 0.4D;
-            this.riddenByEntity.setPosition(this.posX + d0, this.posY + this.getMountedYOffset() + this.riddenByEntity.getYOffset(), this.posZ + d1);
+            this.riddenByEntity.setPosition(this.posX, this.posY + this.getMountedYOffset() + this.riddenByEntity.getYOffset(), this.posZ);
         }
     }
 

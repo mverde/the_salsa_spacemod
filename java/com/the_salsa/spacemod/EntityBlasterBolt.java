@@ -10,10 +10,10 @@ import net.minecraft.world.World;
 
 public class EntityBlasterBolt extends EntityThrowable
 {
-    private float damage;
-    private double originX, originY, originZ;
-    private double range;
-    private double speed;
+    protected float damage;
+    protected double originX, originY, originZ;
+    protected double range;
+    protected double speed;
 
     public EntityBlasterBolt(World world)
     {
@@ -87,7 +87,7 @@ public class EntityBlasterBolt extends EntityThrowable
     /**
      * Checks to see if the player is looking at the mob that it is attempting to deflect BlasterBolts from
      */
-    private boolean shouldPlayerDeflect(EntityPlayer player)
+    protected boolean shouldPlayerDeflect(EntityPlayer player)
     {
     	Vec3 vec3 = player.getLook(1.0F).normalize();
         Vec3 vec31 = Vec3.createVectorHelper(this.posX - player.posX, this.boundingBox.minY + (double)(this.height / 2.0F) - (player.posY + (double)player.getEyeHeight()), 

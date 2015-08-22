@@ -8,7 +8,7 @@ import net.minecraftforge.common.IExtendedEntityProperties;
 
 public class ExtendedPropertiesGravity implements IExtendedEntityProperties
 {
-	public static final String EXT_PROP_NAME = "ExtendedPropertiesGravity";
+	public static final String EX_PROP_NAME = "ExtendedPropertiesGravity";
 	protected Entity entity;
 	protected boolean falling = false;
 	protected double xMotion;
@@ -39,7 +39,7 @@ public class ExtendedPropertiesGravity implements IExtendedEntityProperties
 	    compound.setDouble("motionZ", this.zMotion);
 	    compound.setBoolean("isFalling", this.falling);
 	    
-		parCompound.setTag(EXT_PROP_NAME, compound);
+		parCompound.setTag(EX_PROP_NAME, compound);
 	}
 
 	@Override

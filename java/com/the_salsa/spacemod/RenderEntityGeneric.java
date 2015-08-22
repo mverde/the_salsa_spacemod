@@ -30,13 +30,14 @@ public abstract class RenderEntityGeneric extends Render
      * (Render<T extends Entity) and this method has signature public void func_76986_a(T entity, double d, double d1,
      * double d2, float f, float f1). But JAD is pre 1.5 so doesn't do that.
      */
-    public void doRender(EntityThrowable entity, double x, double y, double z, float yaw, float pitch)
+    public void doRender(EntityThrowable entity, double x, double y, double z, float yaw, float pitch, float scale)
     {
     	Minecraft.getMinecraft().renderEngine.bindTexture(texture);
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float) x, (float) y, (float) z);
 		GL11.glRotatef(yaw, 0.0F, 1.0F, 0.0F);
 		GL11.glRotatef(180F - entity.prevRotationPitch - (entity.rotationPitch - entity.prevRotationPitch) * pitch, 1.0F, 0.0F, 0.0F);
+		GL11.glScalef(scale, scale, scale != 1 ? 2.0F * scale : 1.0F);
 		model.render(entity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 		GL11.glPopMatrix();
     }

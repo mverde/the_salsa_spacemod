@@ -29,6 +29,7 @@ public class ClientProxy extends CommonProxy
 		RenderingRegistry.registerEntityRenderingHandler(EntityBlasterBolt.class, new RenderBlasterBolt(new ModelBlasterBolt(), new ResourceLocation(SpaceMod.MODID, "models/entities/blasterbolt.png")));
 		RenderingRegistry.registerEntityRenderingHandler(EntityPlasmaRocket.class, new RenderPlasmaRocket(new ModelPlasmaRocket(), new ResourceLocation(SpaceMod.MODID, "models/entities/plasmarocket.png")));
 		RenderingRegistry.registerEntityRenderingHandler(EntityBasicShip.class, new RenderBasicShip(new ModelBasicShip(), new ResourceLocation(SpaceMod.MODID, "models/entities/basicship.png")));
+		RenderingRegistry.registerEntityRenderingHandler(EntityShipBlasterBolt.class, new RenderShipBlasterBolt(new ModelBlasterBolt(), new ResourceLocation(SpaceMod.MODID, "models/entities/blasterbolt.png")));
 	}
 	
 	/**

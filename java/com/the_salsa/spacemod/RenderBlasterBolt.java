@@ -1,5 +1,7 @@
 package com.the_salsa.spacemod;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -37,6 +39,6 @@ public class RenderBlasterBolt extends RenderEntityGeneric
     @Override
     public void doRender(Entity entity, double x, double y, double z, float yaw, float pitch)
     {
-        this.doRender((EntityBlasterBolt) entity, x, y, z, yaw, pitch);
+        this.doRender((EntityBlasterBolt) entity, x, y, z, yaw, pitch, 1F);
     }
 }
