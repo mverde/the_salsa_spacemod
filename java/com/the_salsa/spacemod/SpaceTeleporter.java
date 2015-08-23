@@ -23,9 +23,8 @@ public class SpaceTeleporter extends Teleporter
 
 			// get the height value so you don't get stuck in solid blocks or worse, in the void
 			double dy = player.worldObj.getHeightValue(MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posZ));
-
-			// still seem to need to set the position, +1 so you don't get in the void
-			player.setPositionAndUpdate(player.posX, dy + 1, player.posZ);
+			
+			player.setPositionAndUpdate(player.posX, dy + 1.0D, player.posZ);
 	   }
 
 	   @Override

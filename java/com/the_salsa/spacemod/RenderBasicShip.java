@@ -40,7 +40,7 @@ public class RenderBasicShip extends RenderEntityGeneric
     @Override
     public void doRender(Entity entity, double x, double y, double z, float yaw, float pitch)
     {
-    	Minecraft.getMinecraft().renderEngine.bindTexture(texture);
+    	Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(SpaceMod.MODID, "models/entities/basicship" + ((EntityBasicShip)entity).getFuelIncrements() + ".png"));
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float) x, (float) y + 2.0F, (float) z);
 		GL11.glScalef(2.0F, 2.0F, 2.0F);

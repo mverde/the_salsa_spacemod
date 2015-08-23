@@ -161,20 +161,13 @@ public class SpaceEventHandler extends Gui implements IWorldGenerator
 		{
 			event.entity.registerExtendedProperties(ExtendedPropertiesPlayer.EX_PROP_NAME, new ExtendedPropertiesPlayer());
 		}
-		
-		if (event.entity instanceof EntityBasicShip)
-		{
-			event.entity.registerExtendedProperties(ExtendedPropertiesShip.EX_PROP_NAME, new ExtendedPropertiesShip());
-			// ((ExtendedPropertiesShip)event.entity.getExtendedProperties(ExtendedPropertiesShip.EX_PROP_NAME)).setFireTicksMax(((EntityBasicShip)event.entity).getFireTicksMax());
-			((ExtendedPropertiesShip)event.entity.getExtendedProperties(ExtendedPropertiesShip.EX_PROP_NAME)).setFireTicksMax(5);
-		}
 	}
 	
 	/**
 	 * Used to modify gravity and oxygen if the player is in a dimension with modified gravity or no breathable atmosphere.
 	 */
 	@SubscribeEvent
-	public void onPlayerTick(TickEvent.PlayerTickEvent event)
+	public void onPlayerTick1(TickEvent.PlayerTickEvent event)
 	{	
 		if (event.player.getHeldItem() != null && event.player.getHeldItem().getItem() instanceof ItemPlasmaSaber)
 		{
@@ -190,7 +183,6 @@ public class SpaceEventHandler extends Gui implements IWorldGenerator
 			//maybe set the player's oxygen pretty low if they aren't wearing gear and reset it to the levels of the oxygen tanks when they are
 			event.player.attackEntityFrom(DamageSource.drown, 0.5F);
 		}
-		//else if (event.player)
 		
 		if (event.player.dimension == 2 && !event.player.capabilities.isCreativeMode && 
 				(event.player.motionY < -0.0784000015258789D || event.player.motionY > -0.0784000015258789D))
@@ -203,7 +195,8 @@ public class SpaceEventHandler extends Gui implements IWorldGenerator
 				
 				SpaceTeleporter teleporter = new SpaceTeleporter(playerMP.mcServer.worldServerForDimension(0));
 				teleporter.teleport(playerMP, 0);
-				playerMP.setPositionAndUpdate(playerMP.posX, 300D, playerMP.posZ);
+
+				event.player.setPositionAndUpdate(event.player.posX, 300.0D, event.player.posZ);
 			}
 			
 			ExtendedPropertiesPlayer extendedProperties;
@@ -244,6 +237,24 @@ public class SpaceEventHandler extends Gui implements IWorldGenerator
         {
         	event.player.worldObj.updateLightByType(EnumSkyBlock.Block, (int)event.player.posX, (int)event.player.posY, (int)event.player.posZ);
         }
+	}
+	
+	/**
+	 * Used to teleport the player from Earth to space if high enough
+	 */
+	@SubscribeEvent
+	public void onPlayerTick2(TickEvent.PlayerTickEvent event)
+	{
+		if (!event.player.worldObj.isRemote && event.player.dimension == 0 && event.player.posY > 600)
+		{
+			event.player.setPositionAndUpdate(event.player.posX, 100.0D, event.player.posZ);
+			
+			EntityPlayerMP playerMP = (EntityPlayerMP) event.player;
+			
+			SpaceTeleporter teleporter = new SpaceTeleporter(playerMP.mcServer.worldServerForDimension(2));
+			teleporter.teleport(playerMP, 2);
+			event.player.setPositionAndUpdate(event.player.posX, 100.0D, event.player.posZ);
+		}
 	}
 	
 	/**

@@ -59,7 +59,7 @@ public abstract class ItemGunGeneric extends Item
 	    itemStack.stackTagCompound.setInteger("fireTicks", fireTicksMax);
 	    itemStack.stackTagCompound.setBoolean("reloadTimerOn", false);
 	    itemStack.stackTagCompound.setBoolean("fireTimerOn", false);
-	    itemStack.stackTagCompound.setInteger("currentAmmo", this.ammoCapacity);
+	    itemStack.stackTagCompound.setInteger("currentAmmo", 0);
 	}
 	
 	@Override

@@ -97,10 +97,10 @@ public class SpaceMod
     	wrapper.registerMessage(InventoryMessageHandler.class, OxygenInventoryPacket.class, 1, Side.SERVER);
     	
     	//Initialize new Items
-    	blasterPistol = new ItemBlasterPistol("blasterPistol", 4.0D, 40.0D, 10.0F, 10, 20, 20, 1000);
+    	blasterPistol = new ItemBlasterPistol("blasterPistol", 200.0D, 40.0D, 10.0F, 10, 20, 20, 1000);
     	gasCanister = new ItemSpaceGeneric("gasCanister", 1);
     	emptyCanister = new ItemSpaceGeneric("emptyCanister", 16);
-    	blasterRifle = new ItemBlasterRifle("blasterRifle", 5.0D, 60.0D, 8.0F, 3, 40, 40, 1500);
+    	blasterRifle = new ItemBlasterRifle("blasterRifle", 200.0D, 60.0D, 8.0F, 3, 40, 40, 1500);
     	spaceTeleporter = new ItemSpaceTeleporter("spaceTeleporter");
     	plasmaSaberBlue = new ItemPlasmaSaberBlue(plasma, "plasmaSaberBlue");
     	plasmaSaberGreen = new ItemPlasmaSaberGreen(plasma, "plasmaSaberGreen");

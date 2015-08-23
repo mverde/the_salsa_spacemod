@@ -1,12 +1,6 @@
 package com.the_salsa.spacemod;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 import java.util.List;
-
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -15,14 +9,18 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+
+import org.lwjgl.input.Mouse;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class EntityBasicShip extends Entity
 {	
@@ -44,6 +42,10 @@ public class EntityBasicShip extends Entity
     private double velocityZ;
     
     private int fireTicksMax = 5;
+    private int fireTicks = fireTicksMax;
+    private int fuelTicksMax = 6000; //54000;
+    private int fuelTicks = 0;
+
 
     public EntityBasicShip(World world)
     {
@@ -51,7 +53,7 @@ public class EntityBasicShip extends Entity
         this.isShipEmpty = true;
         this.speedMultiplier = 0.07D;
         this.preventEntitySpawning = true;
-        this.setSize(1.5F, 0.6F);
+        this.setSize(4.0F, 1.6F);
         this.yOffset = this.height / 2.0F;
         this.shipRotationPitch = 0.0D;
     }
@@ -70,7 +72,7 @@ public class EntityBasicShip extends Entity
         this.dataWatcher.addObject(17, new Integer(0));
         this.dataWatcher.addObject(18, new Integer(1));
         this.dataWatcher.addObject(19, new Float(0.0F));
-        this.dataWatcher.addObject(20, new Integer(this.fireTicksMax));
+        this.dataWatcher.addObject(20, new Integer(this.fuelTicks));
     }
 
     /**
@@ -131,12 +133,13 @@ public class EntityBasicShip extends Entity
         else if (!this.worldObj.isRemote && !this.isDead)
         {
             this.setForwardDirection(-this.getForwardDirection());
-            this.setTimeSinceHit(10);
-            this.setDamageTaken(this.getDamageTaken() + var2 * 10.0F);
+            this.setTimeSinceHit(5);
+            this.setDamageTaken(this.getDamageTaken() + var2);
             this.setBeenAttacked();
-            boolean flag = damageSource.getEntity() instanceof EntityPlayer && ((EntityPlayer)damageSource.getEntity()).capabilities.isCreativeMode;
+            boolean flag = (damageSource.getEntity() instanceof EntityPlayer || damageSource.getEntity() instanceof EntityPlasmaRocket)
+            		&& ((EntityPlayer)damageSource.getEntity()).capabilities.isCreativeMode;
 
-            if (flag || this.getDamageTaken() > 40.0F)
+            if (flag || this.getDamageTaken() > 80.0F)
             {
                 if (this.riddenByEntity != null)
                 {
@@ -232,12 +235,7 @@ public class EntityBasicShip extends Entity
     {
         super.onUpdate();
         
-    	ExtendedPropertiesShip properties = (ExtendedPropertiesShip) this.getExtendedProperties(ExtendedPropertiesShip.EX_PROP_NAME);
-        
-    	if (properties != null)
-    	{
-    		properties.updateFireTimer(false);
-    	}
+        updateFireTimer(false);
 
         if (this.getTimeSinceHit() > 0)
         {
@@ -246,7 +244,7 @@ public class EntityBasicShip extends Entity
 
         if (this.getDamageTaken() > 0.0F)
         {
-            this.setDamageTaken(this.getDamageTaken() - 1.0F);
+            this.setDamageTaken(this.getDamageTaken() - 0.1F);
         }
 
         this.prevPosX = this.posX;
@@ -324,7 +322,7 @@ public class EntityBasicShip extends Entity
                 this.motionY += 0.007000000216066837D;
             }
             
-            if (this.riddenByEntity != null && this.riddenByEntity instanceof EntityLivingBase)
+            if (this.riddenByEntity != null && this.riddenByEntity instanceof EntityLivingBase && this.fuelTicks > 0)
             {
             	EntityLivingBase rider = (EntityLivingBase)this.riddenByEntity;
             	
@@ -359,6 +357,8 @@ public class EntityBasicShip extends Entity
     			
             	if (this.speedMultiplier > 0)
             	{	
+            		depleteFuel();
+            		
         			float riderYawAdjusted = rider.rotationYawHead >= 0 ? rider.rotationYawHead : 360F + rider.rotationYawHead;
         			float shipYawAdjusted = 360F - (this.rotationYaw >= 0 ? this.rotationYaw : 360F + this.rotationYaw);
         			float riderViewEdgeLeft = riderYawAdjusted - 80F >= 0 ? riderYawAdjusted - 80F : 360 + riderYawAdjusted - 80F;
@@ -478,10 +478,11 @@ public class EntityBasicShip extends Entity
             	this.motionZ = Math.cos(rotationYawRad)  * this.speedMultiplier * riderLookXZMag;
             	this.motionY = this.shipRotationPitch * this.speedMultiplier;
             	
-        		if (Mouse.isButtonDown(1) && this.speedMultiplier > 0 && properties != null && properties.canShipFire())
+        		if (Mouse.isButtonDown(1) && this.speedMultiplier > 0 && canShipFire() && rider instanceof EntityPlayer && ((EntityPlayer)rider).getCurrentEquippedItem() == null)
         		{
         			fire(rider, rotationYawRad);
-        			properties.updateFireTimer(true);
+        			updateFireTimer(true);
+        			depleteFuel();
         		}
         		
     			if (rider.moveForward < 0 && this.speedMultiplier <= 0 && Math.abs(this.shipRotationPitch) == 0 && Math.abs(riderLookVec.yCoord) < 0.3
@@ -580,7 +581,8 @@ public class EntityBasicShip extends Entity
     
     public void fire(EntityLivingBase rider, double rotationYawRad)
     {
-		EntityShipBlasterBolt bolt = new EntityShipBlasterBolt(this.worldObj, rider, 0.5D, 40.0D, 10.0F);
+		EntityShipBlasterBolt bolt = new EntityShipBlasterBolt(this.worldObj, rider, 4.0D, 40.0D, 10.0F);
+		
 		double sqrtXYZ = Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
 		double unitVecX = this.motionX / sqrtXYZ;
 		double unitVecZ = this.motionZ / sqrtXYZ;
@@ -588,9 +590,9 @@ public class EntityBasicShip extends Entity
 		double unitVecXZMag = Math.sqrt(unitVecX * unitVecX + unitVecZ * unitVecZ);
 		
 		bolt.setPositionAndRotation(this.posX + Math.sin(rotationYawRad) * unitVecXZMag * 5, this.posY + unitVecY * 5, this.posZ + Math.cos(rotationYawRad) * unitVecXZMag * 5, this.rotationYaw, this.rotationPitch);
-		bolt.motionX = unitVecX * 4;
-		bolt.motionY = unitVecY * 4;
-		bolt.motionZ = unitVecZ * 4;
+		bolt.motionX = unitVecX * bolt.getSpeed();
+		bolt.motionY = unitVecY * bolt.getSpeed();
+		bolt.motionZ = unitVecZ * bolt.getSpeed();
 
         if (!this.worldObj.isRemote)
         {
@@ -599,7 +601,73 @@ public class EntityBasicShip extends Entity
         }
     }
     
-    public int getFireTicksMax()
+    /**
+     * Updates fire timer, starting it if specified
+     */
+    public void updateFireTimer(boolean startTimer)
+    {	
+    	if ((this.fireTicks == this.fireTicksMax && startTimer) || (this.fireTicks < this.fireTicksMax && this.fireTicks > 0))
+    	{
+    		this.fireTicks--;
+    	}
+    	else if (this.fireTicks <= 0)
+    	{
+    		this.fireTicks = this.fireTicksMax;
+    	}
+    }
+    
+    /**
+     * Returns whether or not the ship can fire based on the state of the fire timer
+     */
+    public boolean canShipFire()
+    {
+		return this.fireTicks == this.fireTicksMax;
+    }
+    
+    /**
+     * Depletes fuel counter and updates how many counters should be displayed on ship wind shield UI if necessary
+     */
+    public void depleteFuel()
+    {
+    	if (this.fuelTicks > 0)
+    	{
+    		this.fuelTicks--;
+    	}
+    	
+    	if (this.fuelTicks % (this.fuelTicksMax / 5) == 0)
+    	{
+    		updateFuelIncrements();
+    	}
+    	System.out.println(this.fuelTicks);
+    }
+    
+    /**
+     * Replenishes fuel counter in response to a player using a gas canister on the ship
+     */
+    public void replenishFuel()
+    {
+    	this.fuelTicks += this.fuelTicksMax / 5;
+    	
+    	if (this.fuelTicks > this.fuelTicksMax)
+    	{
+    		this.fuelTicks = this.fuelTicksMax;
+    	}
+    	
+    	updateFuelIncrements();
+    }
+    
+    /**
+     * Updates dataWatcher object tracking how many fuel dots to show on ship wind shield UI
+     */
+    protected void updateFuelIncrements()
+    {
+    	this.dataWatcher.updateObject(20, Integer.valueOf(this.fuelTicks / (this.fuelTicksMax / 5)));
+    }
+    
+    /**
+     * Returns how many dots should display on the ship wind shield UI fuel gauge
+     */
+    public int getFuelIncrements()
     {
     	return this.dataWatcher.getWatchableObjectInt(20);
     }
@@ -615,12 +683,19 @@ public class EntityBasicShip extends Entity
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    protected void writeEntityToNBT(NBTTagCompound tagCompound) {}
+    protected void writeEntityToNBT(NBTTagCompound tagCompound) 
+    {
+    	tagCompound.setInteger("fuelTicks", this.fuelTicks);
+    }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    protected void readEntityFromNBT(NBTTagCompound tagCompound) {}
+    protected void readEntityFromNBT(NBTTagCompound tagCompound)
+    {
+    	this.fuelTicks = tagCompound.getInteger("fuelTicks");
+    	updateFuelIncrements();
+    }
 
     @SideOnly(Side.CLIENT)
     public float getShadowSize()
@@ -637,15 +712,23 @@ public class EntityBasicShip extends Entity
         {
             return true;
         }
-        else
+        else if (!this.worldObj.isRemote)
         {
-            if (!this.worldObj.isRemote)
+            if (player.getCurrentEquippedItem() == null)
             {
                 player.mountEntity(this);
+            }
+            else if (player.getCurrentEquippedItem().getItem().getUnlocalizedName().equals(SpaceMod.gasCanister.getUnlocalizedName()))
+            {
+            	player.inventory.consumeInventoryItem(SpaceMod.gasCanister);
+            	player.inventory.addItemStackToInventory(new ItemStack(SpaceMod.emptyCanister));
+            	replenishFuel();
             }
 
             return true;
         }
+        
+        return false;
     }
 
     /**
